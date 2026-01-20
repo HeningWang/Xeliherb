@@ -1,0 +1,137 @@
+---
+title: "Causal Implicature - Pilot 2 data analysis"
+author: "MF"
+format: 
+  html:
+    code-fold: true
+    self-contained: true
+editor: visual
+---
+
+```{r}
+#| echo: true
+#| error: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(tidyboot)
+library(aida)
+library(brms)
+library(faintr)
+library(patchwork)
+
+##################################################
+
+# these options help Stan run faster
+options(mc.cores = parallel::detectCores())
+
+# use the aida-theme for plotting
+theme_set(theme_aida())
+
+# global color scheme / non-optimized
+project_colors = c("#E69F00", "#56B4E9", "#009E73", 
+                   "#F0E442", "#0072B2", "#D55E00", 
+                   "#CC79A7", "#000000")
+
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = project_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = project_colors)
+} 
+
+##################################################
+
+# preprocessed data from pilot 2a
+d <- read_csv('01b-processed-data-pilot-2a.csv')
+
+```
+
+Pilot 2 uses similar methods to Pilots 1a and 1b. The main conceptual change is that an additional **reproduction task** was added at the end, in which participants were asked to reproduce the original statement by the Science Team regarding the relation between xeliherb and ralocrop. The purpose of this addition was to explore whether participants would use explicit causal language, possibly also depending on their choice (only xeliherb vs both crops).
+
+## Study details
+
+N=`r d$submission_id %>% unique() %>% length()` participants were recruited via Prolific (English Native, at least 10 previous studies, at least 90% approval rate). Participants took about `r round((d$experiment_duration %>% mean()) /60000, 2)` minutes for Pilot 2 on average. They were paid 0.4 British Pounds.
+
+The experiment code, data an material are [available online](https://github.com/magpie-ea/magpie3-causal-implicature). A live version of the experiment can be tested [here](https://magpie-ea.github.io/magpie3-causal-implicature/).
+
+The experimental material consisted of only the **association condition** from Pilot 1. As before, the critical trial involved a binary forced choice, but the information was presented in slightly layout in Pilot 2 in order to clearly demarcate what the information from the Science Team was (see Figure @fig-screenshot-trial-pilot-2).
+
+```{r}
+#| echo: false
+#| label: fig-screenshot-trial-pilot-2
+#| fig-cap: "Screenshot from the choice trial for Pilot 2."
+knitr::include_graphics("screenshot-choice-trial-pilot-2.png")
+```
+
+After the critical choice trials came a **justification trial** (as before). Following this, participants were presented with a **reproduction trial** as shown in Figure @fig-screenshot-reproduction-pilot-2.
+
+```{r}
+#| echo: false
+#| label: fig-screenshot-reproduction-pilot-2
+#| fig-cap: "Screenshot from the reproduction trial for Pilot 2."
+knitr::include_graphics("screenshot-reprocution-trial-pilot-2.png")
+```
+
+## Results
+
+```{r}
+proportion_both = d %>% filter(!is.na(response)) %>% 
+  group_by(response) %>% 
+  summarize(proportion = n() / (nrow(d)/3)) %>% 
+  .[1,2] %>% round(2)
+```
+
+The overal proportion of the BOTH option was `r proportion_both` .
+
+The reproductions given by participants were manually classified into three categories:
+
+1.  **causal statements:** directly implying a causal relationship (ralocrop causes high yield of xeliherb);
+2.  **neutral statements:** just reporting a correlation;
+3.  **none:** reproductions that failed to mention the relationship between the herbs.
+
+```{r}
+#| echo: false
+#| warnings: false
+#| label: fig-reproduction-results
+#| fig-cap: "Proportion of reproduction types per strategy choice."
+
+dTmp <- d %>% mutate(
+  trialType = case_when(
+      !is.na(reproduction) ~ "reproduction",
+    !is.na(response) ~ "choice",
+    !is.na(justification) ~ "justification",
+  ),
+  response = case_when(
+    !is.na(reproduction) ~ reproClass,
+    !is.na(response) ~ response,
+    !is.na(justification) ~ justification,
+  )) %>% 
+  pivot_wider(id_cols = submission_id, names_from = trialType, values_from = response)
+
+# there must be a more elegant way than this!?
+sumStats <- dTmp %>% group_by(choice) %>% 
+  mutate(choice_count = n()) %>% 
+  ungroup() %>% 
+  group_by(choice, reproduction) %>% 
+  summarize(
+    proportion = n() / choice_count
+    ) %>% unique()
+
+sumStats %>% ggplot(aes(x = reproduction, y = proportion, fill = reproduction)) + 
+  geom_col() +
+  facet_wrap(~choice, ncol = 2)
+```
+
+## List of all reproductions
+
+```{r}
+reproductions <- d %>% filter(!is.na(reproduction)) %>% 
+  select(submission_id, reproClass, reproduction) %>% 
+  arrange(reproClass, submission_id)
+
+knitr::kable(reproductions)
+
+```

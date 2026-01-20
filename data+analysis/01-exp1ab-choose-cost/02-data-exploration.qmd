@@ -1,0 +1,301 @@
+---
+title: "Causal Implicature - Pilot data analysis"
+author: "MF"
+format: 
+  html:
+    code-fold: true
+    self-contained: true
+editor: visual
+---
+
+```{r}
+#| echo: true
+#| error: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(tidyboot)
+library(aida)
+library(brms)
+library(faintr)
+library(patchwork)
+
+##################################################
+
+# these options help Stan run faster
+options(mc.cores = parallel::detectCores())
+
+# use the aida-theme for plotting
+theme_set(theme_aida())
+
+# global color scheme / non-optimized
+project_colors = c("#E69F00", "#56B4E9", "#009E73", 
+                   "#F0E442", "#0072B2", "#D55E00", 
+                   "#CC79A7", "#000000")
+
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = project_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = project_colors)
+} 
+
+##################################################
+
+d1 <- read_csv('01-wrangled-data-pilot-1a.csv')
+d2 <- read_csv('01-wrangled-data-pilot-1b.csv')
+
+d = d1
+```
+
+Two pilot studies were run to test whether a statement like "X is associated with Y", which strictly speaking does not entail a causal relationship between X and Y, can nonetheless convey or suggest a causal connection. The only difference between the studies is the exclusion or inclusion of additional information in the context description (see below).
+
+## Study details
+
+N=200 participants recruited via Prolific (English Native, at least 10 previous studies, at least 90% approval rate). For technical reasons, N=`r d1$submission_id %>% unique() %>% length()` data sets were received for pilot 1a, and N=`r d2$submission_id %>% unique() %>% length()` for pilot 1b. Participants took about `r round((d2$experiment_duration %>% mean()) /60000, 2)` for pilot 1a, and about `r round((d2$experiment_duration %>% mean()) /60000, 2)` minutes for pilot 1b on average. They were paid 0.4 British Pounds.
+
+The experiment code, data and material are [available online](https://github.com/magpie-ea/magpie3-causal-implicature). A live version of the experiment can be tested [here](https://magpie-ea.github.io/magpie3-causal-implicature/).
+
+The experimental material consisted of four different conditions of which each participant saw exactly one (between-subject design). The critical trial involved a binary forced choice, see Figure @fig-screenshot-trial.
+
+```{r}
+#| echo: false
+#| label: fig-screenshot-trial-pilot-1a
+#| fig-cap: "Screenshot from a trial in condition 'association' for Pilot 1a."
+knitr::include_graphics("screenshot-trial-pilot-1a.png")
+```
+
+The four conditions differed with respect to the sentence in bold in the screenshot in Figure @fig-screenshot-trial-pilot-1a, like so:
+
+-   **association**: ... a high yield of xeliherb is associated with the presence of another plant called ralocrop.
+-   **intervention**: ... a high yield of xeliherb was obtained whenever another plant called ralocrop was cultivated as well.
+-   **commonCause**: ... a high yield of xeliherb is associated with the presence of another plant called ralocrop. But they also found that ralocrop only grows on particularly fertile grounds.
+-   **deniedCausality**: ... a high yield of xeliherb is associated with the presence of another plant called ralocrop. But there is no evidence that the cultivation of ralocrop causes a better yield of xeliherb.
+
+In Pilot 1b, participants received another piece of explicit background information, namely that cultivation of ralocrop incurs a cost, as shown in Figure @fig-screenshot-trial-pilot-1b
+
+```{r}
+#| echo: false
+#| label: fig-screenshot-trial-pilot-1b
+#| fig-cap: "Screenshot from a trial in condition 'association' for Pilot 1b. Notice the additional sentence after the critical sentence in bold."
+
+knitr::include_graphics("screenshot-trial-pilot-1b.png")
+```
+
+The relevant condition of interest is **association**. The other conditions function as reference categories. We expect different degrees of belief in the relevant causal relation (ralocrop causes a high yield of xeliherb) after processing different statements by the science team (= different experimental conditions). The auxiliary assumption is that the more participants put faith in the relevant causal relation, they should be more inclined to select the "BOTH" option. Concretely, we therefore expect higher choice rates of the "both" option in the **association** condition than in the **deniedCausality** condition; thus, this latter condition provides a potential lower bound of causal implicature strength. An upper bound would be given by the **intervention** condition, which we predict to have highest choice rates of "BOTH".
+
+## Results
+
+The proportion of choice of the "BOTH" option across conditions is shown in Figure @fig-results-barplot.
+
+```{r}
+#| echo: false
+#| label: fig-results-barplot
+#| warning: false
+#| layout-ncol: 2
+#| fig-cap: "Proportion of choice of 'BOTH' option per condition (with bootstrapped 95% CIs)."
+#| fig-subcap: 
+#|   - "Pilot 1a"
+#|   - "Pilot 1b"
+
+make_barplot <- function(d, title) {
+  sumStats <- d %>% 
+    mutate(decision = ifelse(decision == "both", 1, 0)) %>% 
+    group_by(condition) %>% 
+    tidyboot_mean(column = decision) %>% 
+    mutate(condition = factor(condition, levels = c("deniedCausation", "commonCause", "association", "intervention")))
+  
+  sumStats %>% 
+    ggplot(aes(x = condition, fill = condition, y = mean)) +
+    geom_col() +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.3, width =0.2) +
+    theme(legend.position = 'none') +
+    xlab('condition') +
+    ylab('proportion of "both" choice') +
+    ylim(0,1) +
+    ggtitle(title)
+}
+
+plot1 <- make_barplot(d1, "Pilot 1a: w/o mentioning costs")
+plot2 <- make_barplot(d2, "Pilot 1b: w/ explicit costs")
+
+plot1
+plot2
+
+ggplot2::ggsave(plot = plot1 + xlab("") + ylab("") + ggtitle(""), 
+                filename = "results-Exp1a-barplot.pdf", width= 8, height = 5, scale=0.7)
+ggplot2::ggsave(plot = plot2 + xlab("") + ylab("") + ggtitle(""), 
+                filename = "results-Exp1b-barplot.pdf", width= 8, height = 5, scale=0.7)
+
+```
+
+Descriptively, the order of choice rates across conditions matches expectations. We also see that mentioning a potential cost of ralocrop decreases the overall choice of the "BOTH" condition, which is intuitive.
+
+For statistical analysis, we first look at the data from both pilot studies combined. We find that, indeed, choice rates of "BOTH" were credibly lower in pilot 1b. We also find that, for the pooled data, the **association** condition has a credibly higher rate of "BOTH" choices than the **deniedCausation** condition, but it is not credibly different from the **commonCause** condition or the **intervention** condition.
+
+```{r}
+#| cache: true
+#| warning: false
+#| results: hide
+
+run_regression_single <- function(d) {
+  # run regression model for data from a single pilot version
+  fit <- brm(decision ~ condition, 
+             family = bernoulli(link = "logit"), 
+             data = d %>% mutate(decision = factor(decision, levels = c("single", "both"))))
+  fit
+}
+
+run_regression_joint <- function(d) {
+  # run regression model for all of the data
+  fit <- brm(decision ~ condition * version, 
+             family = bernoulli(link = "logit"), 
+             data = d %>% mutate(decision = factor(decision, levels = c("single", "both"))))
+  fit
+}
+
+fit1 <- run_regression_single(d1)
+fit2 <- run_regression_single(d2)
+fit_joint <- run_regression_joint(rbind(d1,d2))
+```
+
+```{r}
+
+evaluate_fit_joint <- function(fit) {
+  # collect info on relevant contrasts (for all of the data at once)
+  
+  deniedCausationVScommonCause <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "commonCause"
+  )
+  
+  commonCauseVSassociation <- faintr::compare_groups(
+    fit, 
+    lower = condition == "commonCause",
+    higher  = condition == "association"
+  )
+  
+  associationVSintervention <- faintr::compare_groups(
+    fit, 
+    lower = condition == "association",
+    higher  = condition == "intervention"
+  )
+  
+  deniedCaustaionVSassociation <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "association"
+  )
+  
+  deniedCausationVSintervention <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "intervention"
+  )
+  
+  pilot1aVSpilot1b <- faintr::compare_groups(
+    fit,
+    lower = version == "pilot-1b",
+    higher = version == "pilot-1a"
+  )
+  
+  tribble(
+    ~comparison, ~posterior, ~"95%HDI (low)", ~"95%HDI (high)",
+    "pilot 1b < pilot 1a" , pilot1aVSpilot1b$post_prob, pilot1aVSpilot1b$l_ci, pilot1aVSpilot1b$u_ci,
+    "denied causation < common cause" , deniedCausationVScommonCause$post_prob, deniedCausationVScommonCause$l_ci, deniedCausationVScommonCause$u_ci,  
+    "common cause < association" , commonCauseVSassociation$post_prob, commonCauseVSassociation$l_ci, commonCauseVSassociation$u_ci,
+    "association < intervention" , associationVSintervention$post_prob, associationVSintervention$l_ci, associationVSintervention$u_ci,
+    "denied causation < association" , deniedCaustaionVSassociation$post_prob, deniedCaustaionVSassociation$l_ci, deniedCaustaionVSassociation$u_ci,
+    "denied causation < intervention" , deniedCausationVSintervention$post_prob, deniedCausationVSintervention$l_ci, deniedCausationVSintervention$u_ci,
+  )
+}
+
+knitr::kable(evaluate_fit_joint(fit_joint))
+```
+
+For completeness, we also look at the data from each pilot version in isolation. For Pilot 1a, the picture is as follows:
+
+```{r}
+
+evaluate_fit <- function(fit) {
+  # collect pairwise comparisons
+  
+  deniedCausationVScommonCause <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "commonCause"
+  )
+  
+  commonCauseVSassociation <- faintr::compare_groups(
+    fit, 
+    lower = condition == "commonCause",
+    higher  = condition == "association"
+  )
+  
+  associationVSintervention <- faintr::compare_groups(
+    fit, 
+    lower = condition == "association",
+    higher  = condition == "intervention"
+  )
+  
+  deniedCaustaionVSassociation <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "association"
+  )
+  
+  deniedCausationVSintervention <- faintr::compare_groups(
+    fit, 
+    lower = condition == "deniedCausation",
+    higher  = condition == "intervention"
+  )
+  
+  tribble(
+    ~comparison, ~posterior, ~"95%HDI (low)", ~"95%HDI (high)",
+    "denied causation < common cause" , deniedCausationVScommonCause$post_prob, deniedCausationVScommonCause$l_ci, deniedCausationVScommonCause$u_ci,  
+    "common cause < association" , commonCauseVSassociation$post_prob, commonCauseVSassociation$l_ci, commonCauseVSassociation$u_ci,
+    "association < intervention" , associationVSintervention$post_prob, associationVSintervention$l_ci, associationVSintervention$u_ci,
+    "denied causation < association" , deniedCaustaionVSassociation$post_prob, deniedCaustaionVSassociation$l_ci, deniedCaustaionVSassociation$u_ci,
+    "denied causation < intervention" , deniedCausationVSintervention$post_prob, deniedCausationVSintervention$l_ci, deniedCausationVSintervention$u_ci,
+  )
+}
+
+knitr::kable(evaluate_fit(fit1))
+
+xtable::xtable(evaluate_fit(fit1))
+
+```
+
+For the data from Pilot 1b, the results look as follows:
+
+```{r}
+knitr::kable(evaluate_fit(fit2))
+
+xtable::xtable(evaluate_fit(fit2))
+```
+
+In sum, we find the following critical results forall three cases (data combined, only data from Pilot 1a, only data from Pilot 1b): the choice of "BOTH" is credibly higher in the **association** condition than in the **deniedCausation** condition, and it is *not* credibly different from those in the **intervention** condition.
+
+## Interpretation
+
+On the assumption that variation in the rate of "BOTH" choices is mostly explained by the varying strength of a "causal implicature", i.e., a variable degree of belief in the relevant causal relationship, the data provides suggestive evidence that "causal implicatures" are triggered at different degrees by different linguistic expressions. In any case, the data warrant the conclusion that the manner in which a hypothetical "Science Team" delivers information about a statistical association might systematically influence a decision maker's policy choice. Even in the case of a pure association statement (the **association** condition), participants endorsed the critical "BOTH" option more than when a direct causal link was denied.
+
+## Participants' justification of their choices
+
+After giving the binary choice, participants were asked to give a justification for their decision. These are listed in full below.
+
+While some justifications may hint at participants insufficient understanding of the scenario, it is still worth noting what they would choose based on their understanding, as insufficient understanding may also happen in "real-life" cases. On the other hand, it is interesting to see that some participants explicitly justify their "BOTH" decision in the **association** condition in terms of a causal relations (e.g., submission IDs 3901, 3906, ... from Pilot 1a).
+
+Also interesting, some participants seemed to have reasoned about causal structure at a different level, e.g., submission ID 3889 in the **commonCause** condition seems to have reasoned about relocrop causing the fertility of the ground in the long run.
+
+```{r}
+justifications <- rbind(d1,d2) %>% 
+  select(version, submission_id, condition, decision, justification) %>% 
+  arrange(version,decision, condition, submission_id)
+
+knitr::kable(justifications)
+
+```

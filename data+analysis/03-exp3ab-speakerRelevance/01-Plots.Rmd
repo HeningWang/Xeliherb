@@ -1,0 +1,269 @@
+---
+title: "01-Plots"
+output: html_document
+---
+
+Supress messages in this document so that the output is cleaner.
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+Import packages.
+```{r}
+rm(list = ls())
+options(warn = -1)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(aida)
+library(BayesFactor)
+library(pwr)
+library(effsize)
+library(HDInterval)
+```
+
+Set up theme for ggplot.
+
+```{r}
+theme_set(theme_aida())
+
+##################################################
+## CSP-colors
+##################################################
+CSP_colors = c(
+  "#7581B3", "#99C2C2", "#C65353", "#E2BA78", "#5C7457", "#575463",
+  "#B0B7D4", "#66A3A3", "#DB9494", "#D49735", "#9BB096", "#D4D3D9",
+  "#414C76", "#993333"
+  )
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = CSP_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = CSP_colors)
+}
+```
+
+# Data Import 
+
+```{r}
+data <- read.csv("./data_preprocessed_allFactors.csv")
+```
+
+Show how many pps in each condition.
+```{r}
+data %>% 
+  group_by(informationSource, scienceTeam) %>% 
+  summarise(n = n())
+```
+
+# Distribution of the data in density plot
+```{r}
+ggplot(data, aes(x = decision1)) +
+  geom_density(fill = CSP_colors[1]) +
+  facet_wrap(informationSource ~ scienceTeam, scales = "free_y") +
+  labs(title = "Decision1",
+       x = "Decision1",
+       y = "Density")
+
+```
+
+```{r}
+# The data is left-skewed
+ggplot(data, aes(x = decision2)) +
+  geom_density(fill = CSP_colors[1]) +
+  facet_wrap(informationSource ~ scienceTeam, scales = "free_y") +
+  labs(title = "Decision2",
+       x = "Decision2",
+       y = "Density")
+
+
+ggplot(data, aes(x = decision2)) +
+  geom_density(fill = CSP_colors[1]) +
+  labs(title = "Decision2",
+       x = "Decision2",
+       y = "Density")
+
+```
+```{r}
+ggplot(data, aes(x = update)) +
+  geom_density(fill = CSP_colors[1]) +
+  facet_wrap(informationSource ~ scienceTeam, scales = "free_y") +
+  labs(title = "Update",
+       x = "Update",
+       y = "Density")
+```
+# Mean and CIs plot
+```{r}
+data %>% 
+  group_by(informationSource, scienceTeam) %>% 
+  summarise(mean_decision1 = mean(decision1),
+            mean_decision2 = mean(decision2),
+            mean_update = mean(update)) %>% 
+  pivot_longer(cols = c(mean_decision1, mean_decision2, mean_update), names_to = "decision", values_to = "mean") %>% 
+  ggplot(aes(x = decision, y = mean, fill = informationSource)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  facet_wrap(~scienceTeam) +
+  labs(
+       x = "Decision",
+       y = "Mean") +
+  scale_fill_manual(values = CSP_colors)
+```
+Mean and CIs for decision2 only 
+```{r}
+data %>% ggplot(aes(x = scienceTeam, y = decision2, color = informationSource)) +
+  stat_summary(fun.data = mean_cl_boot, geom = "point", position = position_dodge(0.5), width = 0.5) +
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, position = position_dodge(0.5)) +
+  labs(x = "Science Team",
+       y = "Causal Belief Updated",
+       # legend title
+       fill = "Information Source"
+       ) -> p
+p
+ggsave("decision2_mean_CI.png", plot = p, width = 8, height = 6, dpi = 300)
+```
+Update
+```{r}
+data %>% mutate(scienceTeam_relabel = as.factor(ifelse(scienceTeam == "Localization", "-Alignment", "+Alignment"))
+                )%>% ggplot(aes(x = scienceTeam_relabel, y = update, fill = informationSource)) +
+  stat_summary(fun.data = mean_cl_boot, geom = "bar", position = position_dodge(0.5), width = 0.5) +
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, position = position_dodge(0.5)) +
+  labs(x = "Speaker Relevance",
+       y = "Causal Confidence in Change",
+       # legend title
+       fill = "Speaker Addressing"
+       ) -> q
+q
+
+data %>% ggplot(aes(x = informationSource, y = update, color = scienceTeam)) +
+  stat_summary(fun.data = mean_cl_boot, geom = "point", position = position_dodge(0.5), width = 0.5) +
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, position = position_dodge(0.5)) +
+  labs(x = "Science Team",
+       y = "Update of Causal Belief",
+       # legend title
+       fill = "Information Source"
+       )
+```
+
+# Inferential Statistics of Decision2
+Normality test
+```{r}
+shapiro.test(data$decision1)
+shapiro.test(data$decision2)
+# log transformation
+print("Log transformation")
+shapiro.test(log(data$decision2))
+
+shapiro.test(data$update)
+```
+
+Contrast Coding between indirect and direct
+```{r}
+# Set factor levels explicitly
+data$informationSource <- factor(data$informationSource, levels = c("direct", "indirect"))
+data$scienceTeam <- factor(data$scienceTeam, levels = c("Localization", "Cultivation"))
+
+# Apply sum contrast coding
+contrasts(data$informationSource) <- contr.sum(2)
+colnames(contrasts(data$informationSource)) <- "direct_vs_indirect"
+
+contrasts(data$scienceTeam) <- contr.sum(2)
+colnames(contrasts(data$scienceTeam)) <- "localization_vs_cultivation"
+
+# Check the contrast coding
+contrasts(data$informationSource)
+contrasts(data$scienceTeam)
+```
+
+## Linear Regression (Frequentist)
+```{r}
+model_full <- lm(log(decision2) ~  scienceTeam * informationSource, data = data)
+summary(model_full)
+
+model_full_decision1 <- lm(decision1 ~ informationSource * scienceTeam, data = data)
+summary(model_full_decision1)
+
+model_full_update <- lm(update ~ informationSource * scienceTeam, data = data)
+summary(model_full_update)
+```
+```{r}
+model_reduced <- lm(update ~ informationSource + scienceTeam, data = data)
+anova(model_full_update, model_reduced)
+```
+```{r}
+plot(model_full_update)
+library(sjPlot)
+
+# Plot interaction with scienceTeam on the x-axis
+plot_model(model_full_update, type = "int", terms = c("scienceTeam", "informationSource"))
+```
+
+
+
+## Linear Regression (Bayesian)
+
+
+```{r}
+library(brms)
+model_full_bayesian <- brm(
+  update ~ informationSource * scienceTeam,
+  data = data,
+  family = gaussian(),
+  sample_prior = "yes",
+  prior = c(prior("normal(0, 10)"))
+)
+#brms::hypothesis(model, "informationSourceindirect < 0")
+#faintr::compare_groups(model, lower = informationSource == "indirect", higher = informationSource == "direct", include_bf = TRUE)
+```
+
+```{r}
+summary(model_full_bayesian)
+```
+
+```{r}
+brms::pp_check(model_full_bayesian)   # posterior predictive check
+```
+
+```{r}
+hypothesis(model_full_bayesian, "informationSourcedirect_vs_indirect:scienceTeamlocalization_vs_cultivation > 0")
+hypothesis(model_full_bayesian, "informationSourcedirect_vs_indirect > 0")
+
+```
+```{r}
+library(emmeans)
+pairs(emmeans(model_full_bayesian, ~ informationSource | scienceTeam))
+emms <- emmeans(model_full_bayesian, ~ informationSource | scienceTeam)
+pairs_emms <- contrast(emms, method = "pairwise", infer = c(TRUE, TRUE), type = "response")
+faintr::get_cell_definitions(model_full_bayesian)
+faintr::compare_groups(model_full_bayesian, lower = informationSource == "indirect" & scienceTeam == "Localization", 
+                       higher = informationSource == "direct" & scienceTeam == "Localization", 
+                       include_bf = TRUE)
+
+faintr::compare_groups(model_full_bayesian, lower = informationSource == "indirect" & scienceTeam == "Cultivation", 
+                       higher = informationSource == "direct" & scienceTeam == "Cultivation", 
+                       include_bf = TRUE)
+
+faintr::compare_groups(model_full_bayesian, lower = informationSource == "indirect" & scienceTeam == "Cultivation", 
+                       higher = informationSource == "indirect" & scienceTeam == "Localization", 
+                       include_bf = TRUE)
+
+faintr::compare_groups(model_full_bayesian, lower = informationSource == "direct" & scienceTeam == "Cultivation", 
+                       higher = informationSource == "direct" & scienceTeam == "Localization", 
+                       include_bf = TRUE)
+
+faintr::compare_groups(model_full_bayesian, lower = informationSource == "indirect" & scienceTeam == "Cultivation", 
+                       higher = informationSource == "direct" & scienceTeam == "Localization", 
+                       include_bf = TRUE)
+
+
+
+```
+
+Compare indirect Localization and direct Cultivation (the first two conditions collect in the first experiment) 
+```{r}
+faintr::compare_groups(model_full_bayesian, higher = informationSource == "direct" & scienceTeam == "Cultivation", 
+                       lower = informationSource == "indirect" & scienceTeam == "Localization", 
+                       include_bf = TRUE)
+```
+
+

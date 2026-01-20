@@ -1,0 +1,90 @@
+---
+title: "00-Preprocessing"
+output: html_document
+---
+Supress messages in this document so that the output is cleaner.
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+Import packages.
+```{r}
+rm(list = ls())
+options(warn = -1)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(aida)
+library(BayesFactor)
+library(pwr)
+library(effsize)
+library(HDInterval)
+```
+
+# Data Import of Batch 1-4 of indirect-Localization and direct-Cultivation conditions
+```{r}
+data_indirectLocalization_batch1 <- read.csv("../../experiments/stable-indirectSource/data/batch1/results.csv")
+
+data_indirectLocalization_batch2_indirect <- read.csv("../../experiments/stable-indirectSource/data/batch2/results_batch2_indirect.csv")
+
+data_indirectLocalization_batch2_direct <- read.csv("../../experiments/stable-indirectSource/data/batch2/results_batch2_direct.csv")
+
+data_indirectLocalization_batch3_direct <- read.csv("../../experiments/stable-indirectSource/data/batch3/results_batch3_direct.csv")
+
+data_indirectLocalization_batch3_indirect <- read.csv("../../experiments/stable-indirectSource/data/batch3/results_batch3_indirect.csv")
+
+data_indirectLocalization_batch4_direct <- read.csv("../../experiments/stable-indirectSource/data/batch4/results_batch4_direct.csv")
+
+data_indirectLocalization_batch4_indirect <- read.csv("../../experiments/stable-indirectSource/data/batch4/results_batch4_indirect.csv")
+
+data_indirectLocalization_combined <- rbind(data_indirectLocalization_batch1, data_indirectLocalization_batch2_indirect,
+                                            data_indirectLocalization_batch2_direct, data_indirectLocalization_batch3_direct,
+                                            data_indirectLocalization_batch3_indirect, data_indirectLocalization_batch4_direct,
+                                            data_indirectLocalization_batch4_indirect)
+
+data_indirectLocalization_combined %>% mutate(scienceTeam = ifelse(informationSource == "indirect", "Localization", "Cultivation")) -> data_indirectLocalization_combined
+```
+
+# Data Import of Batch 1 of indirectCultivation
+```{r}
+data_indirectCultivation_batch1_direct <- read.csv("../../experiments/stable-indirectSource-V2/data/batch1/results_direct.csv")
+data_indirectCultivation_batch1_indirect <- read.csv("../../experiments/stable-indirectSource-V2/data/batch1/results_indirect.csv")
+
+data_indirectCultivation_batch2_direct <- read.csv("../../experiments/stable-indirectSource-V2/data/batch2/results_direct.csv")
+data_indirectCultivation_batch2_indirect <- read.csv("../../experiments/stable-indirectSource-V2/data/batch2/results_indirect.csv")
+
+data_indirectCultivation_combined <- rbind(data_indirectCultivation_batch1_direct, 
+                                           data_indirectCultivation_batch1_indirect,
+                                           data_indirectCultivation_batch2_direct,
+                                           data_indirectCultivation_batch2_indirect)
+
+data_indirectCultivation_combined %>% mutate(scienceTeam = ifelse(informationSource == "indirect", "Cultivation", "Localization")) -> data_indirectCultivation_combined
+
+data_combined <- rbind(data_indirectLocalization_combined, data_indirectCultivation_combined)
+
+```
+
+# Mutate and factorise the rows
+```{r}
+data_combined <- data_combined %>% group_by(submission_id, informationSource, scienceTeam) %>% 
+  summarize(
+    decision1 = first(na.omit(decision1)),
+    decision2 = first(na.omit(decision2)),
+    responseTime_decision1 = first(na.omit(responseTime)),
+    responseTime_decision2 = nth(na.omit(responseTime),2)
+  ) %>%
+  mutate(update = decision2 - decision1)
+
+data_combined$scienceTeam <- factor(data_combined$scienceTeam, levels = c("Localization", "Cultivation"))
+data_combined$informationSource <- factor(data_combined$informationSource, levels = c("indirect", "direct"))
+data_combined$id <- as.factor(1:nrow(data_combined))
+```
+# Show number of pp
+```{r}
+data_combined %>% group_by(scienceTeam, informationSource) %>% summarise(n = n_distinct(submission_id))
+```
+
+# Save data
+```{r}
+write.csv(data_combined, file = "./data_preprocessed_allFactors.csv")
+```
