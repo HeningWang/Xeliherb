@@ -12,13 +12,23 @@
     <template v-for="(trial, i) of items">
       <Screen :key="i">
         <Slide>
-          <p><strong>Context:</strong> {{ trial.context }}</p>
+          <h2><strong>Context</strong></h2>
+
+          <p>You are leading a group of colonists to a far away planet called Xelifan-3. The information you received from Mission Control when you departed months ago is this:</p>
+
+          <div style="background-color:#FF9999"><strong>Information from Mission Control:</strong> <br> To survive on Xelifan-3, you need constant supply of the seeds of a plant called xeliherb, which grows exclusively on Xelifan-3.</div>
+
+          <p>Prior to arrival on Xeliherb-3 your Science Team has been sent ahead to explore the planet. You have since lost contact with the Science Team, but you did receive one short report. Here is what the Science Team reported:</p>
+
+          <div style="background-color:#AAAAFF"><strong>Information from Science Team:</strong> <br> A high yield of xeliherb is associated with the presence of ralocrop.
+          </div>
+
           <p>
-            <strong>{{ trial.criticalSentence }}</strong>
+            Ralocrop is another plant, which is not exclusive to Xelifan-3.
+            It can be found throughout the galaxy and is well-known.
+            It is also well-known that the cultivation of ralocrop is costly (water, energy resources).
           </p>
-          <p>
-            {{ trial.furtherContext }}
-          </p>
+
           <p><strong>Question:</strong> {{ trial.taskQuestion }}</p>
           <ForcedChoiceInput
             :response.sync="$magpie.measurements.response"
@@ -30,8 +40,7 @@
               trialNR: i,
               itemNr: trial.itemNr,
               itemName: trial.itemName,
-              condition: trial.condition,
-              measure: 'choice'
+              condition: trial.condition
             }"
           />
         </Slide>
@@ -46,10 +55,10 @@
           <!-- <p style="color: grey"> -->
           <!--   (You need to enter at least 20 characters of text to proceed.) -->
           <!-- </p> -->
-          <TextareaInput :response.sync="$magpie.measurements.response" />
+          <TextareaInput :response.sync="$magpie.measurements.justification" />
           <button
             v-if="
-              $magpie.measurements.response
+              $magpie.measurements.justification
             "
             @click="$magpie.saveAndNextScreen()"
           >
@@ -60,8 +69,7 @@
                    trialNR: i+1,
                    itemNr: trial.itemNr,
                    itemName: trial.itemName,
-                   condition: trial.condition,
-                   measure: 'justification'
+                   condition: trial.condition
             }"
           />
         </Slide>
@@ -70,23 +78,20 @@
       <Screen :key="i">
         <Slide>
           <p>
-            There is also an outpost of your colonists on Xelifan-3.
-            Unfortunately, due to atmospheric conditions, communication is difficult.
-            You can only send two short messages to the colonists in this outpost before all contact breaks off for potentially a long time.
+            Due to atmospheric conditions and technical problems you are about to lose contact to an outpost on the planet.
+            You have only very little time to send a short message to the colonists in this outpost before all contact breaks off for potentially a long time.
+            The colonists in the outpost know about xeliherb and its importance. They know the costs associated with cultivation of ralocrop.
+            What they do not know is what your Science Team reported.
+            <strong>You cannot forward the original report. </strong>
+            <strong>Please type what you recall from the Science Team's report into the text box, so that the other colonists can make a decision like you did on their own!</strong>
           </p>
-          <strong>Which of the following messages will you send to inform the outpost about ralocrop?</strong>
-
-          <br><br/>
-
-          <MultipleChoiceInput
-            :response.sync= "$magpie.measurements.response"
-            :randomize=true
-            :options="['Cultivation of ralocrop is costly (water, energy resources).',
-                      'Cultivation of ralocrop is easy and cheap.',
-                      'Ralocrop does not grow on Xelifan-3.']" />
+          <!-- <p style="color: grey"> -->
+          <!--   (You need to enter at least 20 characters of text to proceed.) -->
+          <!-- </p> -->
+          <TextareaInput :response.sync="$magpie.measurements.reproduction" />
           <button
             v-if="
-              $magpie.measurements.response
+              $magpie.measurements.reproduction
             "
             @click="$magpie.saveAndNextScreen()"
           >
@@ -97,44 +102,7 @@
                    trialNR: i+2,
                    itemNr: trial.itemNr,
                    itemName: trial.itemName,
-                   condition: trial.condition,
-                   measure: 'relation'
-            }"
-          />
-        </Slide>
-      </Screen>
-
-      <Screen :key="i">
-        <Slide>
-          <p>
-            Please also advice the outpost about the relation between xeliherb and ralocrop.
-          </p>
-          <strong>Which of the following messages will you send to inform the outpost about the relation between xeliherb and ralocrop?</strong>
-
-          <br><br/>
-
-          <MultipleChoiceInput
-            :response.sync= "$magpie.measurements.response"
-            :randomize=true
-            :options="['association', 'intervention', 'observation']"
-            :options-html="['A high yield of xeliherb is associated with the presence of ralocrop.',
-                       'A high yield of xeliherb was observed whenever ralocrop had been cultivated as well.',
-                       'A high yield of xeliherb was observed whenever ralocrop was observed as well.']" />
-          <button
-            v-if="
-              $magpie.measurements.response
-            "
-            @click="$magpie.saveAndNextScreen()"
-          >
-            Submit
-          </button>
-          <Record
-            :data="{
-                   trialNR: i+3,
-                   itemNr: trial.itemNr,
-                   itemName: trial.itemName,
-                   condition: trial.condition,
-                   measure: 'ralocrop'
+                   condition: trial.condition
             }"
           />
         </Slide>
@@ -152,13 +120,13 @@
 import items from '../trials/items.csv';
 import _ from 'lodash';
 
-console.log("Hi, I'm Pilot 03a! I live in embedded positions.")
+console.log("Hi, I'm Pilot 02a!")
 
 export default {
   name: 'App',
   data() {
-    return { items: _.shuffle(items).slice(0, 1) };
-    // return { items: items.slice(0, 1) };
+    // return { items: _.shuffle(items).slice(0, 1) };
+    return { items: items.slice(0, 1) };
   },
   computed: {
     // Expose lodash to template code
