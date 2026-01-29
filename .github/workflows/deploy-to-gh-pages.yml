@@ -12,12 +12,12 @@ jobs:
       max-parallel: 1
       matrix:
         folder:
-          - experiments/experiment1a/
-          - experiments/experiment1b/
-          - experiments/experiment2a/
-          - experiments/experiment2b/
-          - experiments/experiment3a/
-          - experiments/experiment3b/
+          - experiments/1a/
+          - experiments/1b/
+          - experiments/2a/
+          - experiments/2b/
+          - experiments/3a/
+          #- experiments/3b/
 
     runs-on: ubuntu-latest
     steps:
