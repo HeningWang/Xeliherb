@@ -65,4 +65,5 @@ p
 
 ggsave("results_exp2b.png", p, width = 8, height = 6)
 
+sumStats
 

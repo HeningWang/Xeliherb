@@ -60,7 +60,7 @@ data %>%
 # Distribution of the data in density plot
 ```{r}
 ggplot(data, aes(x = decision1)) +
-  geom_density(fill = CSP_colors[1]) +
+  geom_histogram(fill = CSP_colors[1]) +
   facet_wrap(informationSource ~ scienceTeam, scales = "free_y") +
   labs(title = "Decision1",
        x = "Decision1",
@@ -71,7 +71,7 @@ ggplot(data, aes(x = decision1)) +
 ```{r}
 # The data is left-skewed
 ggplot(data, aes(x = decision2)) +
-  geom_density(fill = CSP_colors[1]) +
+  geom_histogram(fill = CSP_colors[1]) +
   facet_wrap(informationSource ~ scienceTeam, scales = "free_y") +
   labs(title = "Decision2",
        x = "Decision2",
@@ -79,7 +79,7 @@ ggplot(data, aes(x = decision2)) +
 
 
 ggplot(data, aes(x = decision2)) +
-  geom_density(fill = CSP_colors[1]) +
+  geom_histogram(fill = CSP_colors[1]) +
   labs(title = "Decision2",
        x = "Decision2",
        y = "Density")
@@ -95,15 +95,78 @@ ggplot(data, aes(x = update)) +
 ```
 # Mean and CIs plot
 ```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+df_long <- data %>%
+  select(id, informationSource, scienceTeam, decision1, decision2) %>%
+  pivot_longer(
+    cols = c(decision1, decision2),
+    names_to = "time",
+    values_to = "decision"
+  ) %>%
+  mutate(
+    time = recode(time,
+                  decision1 = "Prior",
+                  decision2 = "Posterior"),
+    time = factor(time, levels = c("Prior", "Posterior"))
+  )
+
+ggplot(df_long, aes(x = time, y = decision)) +
+  geom_line(aes(group = id), linewidth = 0.3, alpha = 0.25, color = "grey40") +
+  geom_point(
+    size = 1.2, alpha = 0.35, color = "grey10",
+    position = position_jitter(width = 0.05, height = 0)
+  ) +
+  stat_summary(fun = mean, geom = "point", size = 2.5) +
+  stat_summary(fun = mean, geom = "line", aes(group = 1), linewidth = 0.8) +
+  facet_grid(informationSource ~ scienceTeam) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 10)
+  ) +
+  coord_cartesian(ylim = c(38, 82)) +   # 🔍 ZOOM HERE
+  labs(
+    x = NULL,
+    y = "Belief rating"
+  ) +
+  theme_aida() -> slope_plot
+
+slope_plot
+ggsave("slope_plot.png", plot = slope_plot, width = 8, height = 6, dpi = 300)
+```
+```{r}
+df_delta_long <- data %>%
+  mutate(delta = decision2 - decision1) %>%
+  select(id, informationSource, scienceTeam, delta) %>%
+  mutate(
+    start = 0,
+    end = delta
+  ) %>%
+  pivot_longer(c(start, end), names_to = "t", values_to = "y") %>%
+  mutate(t = factor(t, levels = c("start", "end"), labels = c("0", "Δ")))
+
+ggplot(df_delta_long, aes(x = t, y = y)) +
+  geom_line(aes(group = id), linewidth = 0.3, alpha = 0.25, color = "grey40") +
+  stat_summary(fun = mean, geom = "point", size = 2.5) +
+  stat_summary(fun = mean, geom = "line", aes(group = 1), linewidth = 0.8) +
+  facet_grid(informationSource ~ scienceTeam) +
+  coord_cartesian(ylim = c(-10, 50)) +
+  labs(x = NULL, y = "Update (Posterior − Prior)") +
+  theme_aida()
+```
+
+```{r}
 data %>% 
   group_by(informationSource, scienceTeam) %>% 
   summarise(mean_decision1 = mean(decision1),
             mean_decision2 = mean(decision2),
             mean_update = mean(update)) %>% 
   pivot_longer(cols = c(mean_decision1, mean_decision2, mean_update), names_to = "decision", values_to = "mean") %>% 
-  ggplot(aes(x = decision, y = mean, fill = informationSource)) +
+  ggplot(aes(x = decision, y = mean, fill = scienceTeam)) +
   geom_bar(stat = "identity", position = position_dodge()) +
-  facet_wrap(~scienceTeam) +
+  facet_wrap(~informationSource) +
   labs(
        x = "Decision",
        y = "Mean") +
@@ -111,7 +174,7 @@ data %>%
 ```
 Mean and CIs for decision2 only 
 ```{r}
-data %>% ggplot(aes(x = scienceTeam, y = decision2, color = informationSource)) +
+data %>% ggplot(aes(x = informationSource, y = decision2, color = scienceTeam)) +
   stat_summary(fun.data = mean_cl_boot, geom = "point", position = position_dodge(0.5), width = 0.5) +
   stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, position = position_dodge(0.5)) +
   labs(x = "Science Team",
@@ -135,15 +198,51 @@ data %>% mutate(scienceTeam_relabel = as.factor(ifelse(scienceTeam == "Localizat
        ) -> q
 q
 
-data %>% ggplot(aes(x = informationSource, y = update, color = scienceTeam)) +
-  stat_summary(fun.data = mean_cl_boot, geom = "point", position = position_dodge(0.5), width = 0.5) +
-  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, position = position_dodge(0.5)) +
-  labs(x = "Science Team",
-       y = "Update of Causal Belief",
-       # legend title
-       fill = "Information Source"
-       )
+data_plot <- data %>%
+  mutate(
+    scienceTeam = factor(
+      scienceTeam,
+      levels = c("Cultivation", "Localization"),
+      labels = c("Intervention-oriented", "Diagnostic-oriented")
+    )
+  ) %>%
+  mutate(
+    scienceTeam = relevel(scienceTeam, ref = "Intervention-oriented")
+  )
+
+r <- data_plot %>%
+  ggplot(aes(x = informationSource, y = update, color = scienceTeam)) +
+  stat_summary(
+    fun.data = mean_cl_boot,
+    geom = "point",
+    position = position_dodge(0.5),
+    size = 3
+  ) +
+  stat_summary(
+    fun.data = mean_cl_boot,
+    geom = "errorbar",
+    width = 0.2,
+    position = position_dodge(0.5),
+    linewidth = 0.8
+  ) +
+  labs(
+    x = "Directness of Information",
+    y = "Mean Change of Causal Confidence",
+    color = "Speaker Goal Orientation"
+  ) +
+  theme_aida()
+
+r
+ggsave("update_mean_CIs.png", plot = r, width = 8, height = 6, dpi = 300)
 ```
+```{r}
+ggplot(data, aes(x = informationSource, y = update, fill = informationSource)) +
+  geom_violin(trim = FALSE, alpha = .5) +
+  stat_summary(fun.data = mean_cl_boot, geom = "pointrange") +
+  facet_wrap(~ scienceTeam) +
+  theme_aida()
+```
+
 
 # Inferential Statistics of Decision2
 Normality test
@@ -177,7 +276,7 @@ contrasts(data$scienceTeam)
 
 ## Linear Regression (Frequentist)
 ```{r}
-model_full <- lm(log(decision2) ~  scienceTeam * informationSource, data = data)
+model_full <- lm(decision2 ~  scienceTeam * informationSource, data = data)
 summary(model_full)
 
 model_full_decision1 <- lm(decision1 ~ informationSource * scienceTeam, data = data)
@@ -201,15 +300,180 @@ plot_model(model_full_update, type = "int", terms = c("scienceTeam", "informatio
 
 
 ## Linear Regression (Bayesian)
+```{r}
+# Option 1 in brms: model Decision 2 while controlling for Decision 1
+# and explicitly account for the bounded slider (0–100) via a truncated Gaussian.
+#
+# This avoids rescaling the DV and keeps the original 0–100 metric.
+# The "starting point is 50" is handled by centering decision1 at 50.
+
+library(brms)
+
+# --- Prep (recommended) ---
+data$decision1_c <- data$decision1 - 50  # center at neutral midpoint
+data$decision2_c <- data$decision2       # keep on 0–100 scale
+
+# Ensure factors have intended reference levels (adjust as needed)
+data$informationSource <- relevel(factor(data$informationSource), ref = "indirect")
+data$scienceTeam       <- relevel(factor(data$scienceTeam),       ref = "Cultivation")
+data$submission_id    <- factor(data$submission_id)  # random effect
+
+# --- Model ---
+# Truncated Gaussian respects bounds without needing a (0,1) transformation.
+# Key term: decision1_c controls baseline; interaction tests the incremental post effect.
+fit_opt1_trunc <- brm(
+  formula = bf(decision2_c | trunc(lb = 0, ub = 100) ~
+                 decision1_c + informationSource * scienceTeam + (1 | submission_id)),
+  data    = data,
+  family  = gaussian(),
+  prior   = c(
+    prior(normal(50, 20), class = "Intercept"),   # midpoint-ish prior on posterior judgment
+    prior(normal(0, 10),  class = "b"),           # weakly informative slopes
+    prior(exponential(1), class = "sigma")        # regularize residual SD
+  ),
+  chains  = 4, iter = 2000, warmup = 1000,
+  cores   = 4,
+  seed    = 1234,
+  backend = "cmdstanr",
+  control = list(adapt_delta = 0.95)
+)
+
+summary(fit_opt1_trunc)
+# Posterior summaries for the interaction:
+#   b_informationSourcedirect:scienceTeamlocalization  (name depends on contrasts)
+posterior_summary(fit_opt1_trunc)
+```
+```{r}
+hypothesis(fit_opt1_trunc, "informationSourcedirect:scienceTeamLocalization > 0")
+hypothesis(fit_opt1_trunc, "informationSourcedirect  > 0")
+
+```
+```{r}
+# Difference between Direct–Localization and Indirect–Cultivation
+hypothesis(
+  fit_opt1_trunc,
+  "informationSourcedirect +
+   informationSourcedirect:scienceTeamLocalization > 0"
+)
+
+# Difference between Direct–Cultivation and Indirect–Localization
+hypothesis(
+  fit_opt1_trunc,
+  "informationSourcedirect -
+   informationSourcedirect:scienceTeamLocalization > 0"
+)
+```
+```{r}
+library(tidybayes)
+# Newdata at baseline: Decision1 = 50 => decision1_c = 0
+nd <- expand.grid(
+  decision1_c = 0,
+  informationSource = c("indirect","direct"),
+  scienceTeam = c("Cultivation","Localization")
+)
+
+# Posterior draws of fitted means
+draws <- add_epred_draws(fit_opt1_trunc, newdata = nd, re_formula = NA) %>%
+  mutate(
+    informationSource = factor(informationSource, levels = c("indirect","direct")),
+    scienceTeam = factor(scienceTeam, levels = c("Cultivation","Localization"))
+  )
+
+# Raw data for plotting
+data_plot <- data %>%
+  mutate(
+    informationSource = factor(informationSource, levels = c("indirect","direct")),
+    scienceTeam = factor(scienceTeam, levels = c("Cultivation","Localization"))
+  )
+
+pd <- position_dodge(width = 0.4)
+
+results_final <-
+  ggplot() +
+  # Raw data: map colour to scienceTeam ONLY to enable dodging,
+  # then force both to be grey via scale_color_identity()
+  geom_point(
+    data = data_plot,
+    aes(x = informationSource, y = decision2, colour = scienceTeam),
+    position = position_jitterdodge(jitter.width = 0.10, dodge.width = 0.4),
+    alpha = 0.15, size = 1.2
+  ) +
+  # Model predictions: use colour mapping normally
+  stat_pointinterval(
+    data = draws,
+    aes(x = informationSource, y = .epred, colour = scienceTeam),
+    position = pd,
+    .width = 0.95,
+    point_size = 3
+  ) +
+  scale_y_continuous(limits = c(65, 95)) +
+  # Make RAW points grey but keep model colours:
+  # easiest is to separate aesthetics (see Fix 2 below).
+  theme_aida() +
+   theme(
+    axis.text.y  = element_text(size = 14),
+    axis.text.x  = element_text(size = 14,
+                                #angle = 45,
+                                #hjust = 1,
+                                #vjust = 1
+                                ),
+    axis.title.y = element_text(size = 16),
+    axis.title.x = element_text(size = 16),
+    legend.text  = element_text(size = 14),
+    legend.title = element_text(size = 14)
+  ) +
+  labs(
+    y = "Posterior Predicted Updated Belief",
+    x = "Directness of Information",
+  ) +
+scale_colour_discrete(
+  labels = c(
+    Cultivation  = "Intervention-oriented",
+    Localization = "Diagnostic-oriented"
+  ),
+  name = "Speaker Goal Orientation"
+)
+  
+
+results_final
+
+ggsave("plot_results_final.png", plot = results_final, width = 8, height = 6, dpi = 300)
+```
 
 
 ```{r}
+# Helper: compute contrasts from epred draws
+contrasts <- draws %>%
+  select(.draw, informationSource, scienceTeam, .epred) %>%
+  tidyr::pivot_wider(names_from = scienceTeam, values_from = .epred) %>%
+  mutate(diff_loc_minus_cult = Localization - Cultivation) %>%
+  select(.draw, informationSource, diff_loc_minus_cult)
+
+# Plot localization - cultivation within each infoSource
+ggplot(contrasts, aes(x = informationSource, y = diff_loc_minus_cult)) +
+  stat_pointinterval(.width = c(.5, .95)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  labs(
+    x = "Information source",
+    y = "Posterior difference: localization − cultivation\n(Decision 2 | Decision 1 = 50)"
+  )
+```
+
+
+
+
+
+# Old model to clean up
+
+```{r}
 library(brms)
+
 model_full_bayesian <- brm(
-  update ~ informationSource * scienceTeam,
+  decision2 ~ decision1 + informationSource * scienceTeam,
   data = data,
   family = gaussian(),
   sample_prior = "yes",
+  backend = "cmdstanr",
   prior = c(prior("normal(0, 10)"))
 )
 #brms::hypothesis(model, "informationSourceindirect < 0")
@@ -266,4 +530,234 @@ faintr::compare_groups(model_full_bayesian, higher = informationSource == "direc
                        include_bf = TRUE)
 ```
 
+
+## New analysis attempt
+```{r}
+data_model <- data %>%
+  select(decision1, decision2, informationSource, scienceTeam, submission_id) %>%
+  pivot_longer(
+    cols = c(decision1, decision2),
+    names_to = "decision_point",
+    values_to = "decision"
+  ) %>%
+  mutate(
+    decision_point = if_else(decision_point == "decision1", 0L, 1L),
+    submission_id = factor(submission_id),
+    informationSource = factor(informationSource),
+    scienceTeam = factor(scienceTeam)
+  )
+
+# Example (change to your actual desired baselines)
+data_model <- data_model %>%
+  mutate(
+    informationSource = relevel(informationSource, ref = "indirect"),
+    scienceTeam = relevel(scienceTeam, ref = "Cultivation")
+  )
+
+eps <- 0.5
+data_model <- data_model %>%
+mutate(decision01 = (decision + eps) / (100 + 2*eps))  # maps to (0,1)
+
+
+model_zoib <- brm(
+bf(
+  decision01 ~ decision_point + decision_point:(informationSource * scienceTeam) +
+    (1 + decision_point | submission_id),
+  zoi ~ decision_point + decision_point:(informationSource * scienceTeam),
+  coi ~ 1
+),
+  data = data_model,
+  family = zero_one_inflated_beta(),
+  backend = "cmdstanr",
+  prior = c(
+    prior(normal(0, 1), class = "b"),
+    prior(normal(0, 1), class = "Intercept"),
+    prior(exponential(1), class = "phi"),
+    prior(exponential(1), class = "sd"),
+    prior(lkj(2), class = "cor"),
+    prior(logistic(0, 1), class = "Intercept", dpar = "zoi"),
+    prior(logistic(0, 1), class = "Intercept", dpar = "coi")
+  ),
+  chains = 4, iter = 3000, warmup = 1500,
+  cores = 4, seed = 1234,
+  control = list(adapt_delta = 0.99, max_treedepth = 15)
+)
+
+summary(model_zoib)
+# Posterior summaries for the interaction:
+#   b_informationSourcedirect:scienceTeamlocalization  (name depends on contrasts)
+posterior_summary(model_zoib)
+```
+```{r}
+library(dplyr)
+library(tidyr)
+library(tidybayes)
+library(ggplot2)
+
+# condition grid at decision2
+nd <- expand.grid(
+  decision_point = 1,
+  informationSource = c("indirect", "direct"),
+  scienceTeam = c("Cultivation", "Localization")
+)
+
+mu_draws <- model_zoib %>%
+  add_epred_draws(newdata = nd, re_formula = NA) %>%
+  rename(mu = .epred) %>%
+  # ensure unique cell per draw (protect against duplicates)
+  group_by(.draw, decision_point, informationSource, scienceTeam) %>%
+  summarise(mu = mean(mu), .groups = "drop")
+
+# Direct - Indirect within each scienceTeam
+within_team <- mu_draws %>%
+  select(.draw, scienceTeam, informationSource, mu) %>%
+  pivot_wider(names_from = informationSource, values_from = mu) %>%
+  mutate(diff_DI = direct - indirect) %>%
+  select(.draw, scienceTeam, diff_DI)
+
+# Difference-in-differences: Localization - Cultivation
+contrast_draws <- within_team %>%
+  pivot_wider(names_from = scienceTeam, values_from = diff_DI) %>%
+  mutate(
+    interaction = Localization - Cultivation,
+    interaction_0_100 = interaction * 100
+  ) %>%
+  select(.draw, interaction, interaction_0_100)
+
+# quick NA check
+mean(is.na(contrast_draws$interaction_0_100))
+
+contrast_draws %>%
+  summarise(
+    mean  = mean(interaction_0_100, na.rm = TRUE),
+    l95   = quantile(interaction_0_100, 0.025, na.rm = TRUE),
+    u95   = quantile(interaction_0_100, 0.975, na.rm = TRUE),
+    p_gt0 = mean(interaction_0_100 > 0, na.rm = TRUE)
+  )
+
+ggplot(contrast_draws, aes(x = interaction_0_100)) +
+  tidybayes::stat_halfeye(.width = c(.5, .8, .95)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Interaction at decision2 (0–100 scale)",
+    y = NULL
+  ) +
+  theme_classic()
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(tidybayes)
+
+nd <- expand.grid(
+  decision_point = 1,
+  informationSource = c("indirect", "direct"),
+  scienceTeam = c("Cultivation", "Localization")
+)
+
+mu_draws <- model_zoib %>%
+  add_epred_draws(newdata = nd, re_formula = NA) %>%
+  rename(mu = .epred) %>%
+  group_by(.draw, informationSource, scienceTeam) %>%
+  summarise(mu = mean(mu), .groups = "drop")
+
+pairwise_all <- mu_draws %>%
+  unite(cond, informationSource, scienceTeam, sep = "_") %>%
+  pivot_wider(names_from = cond, values_from = mu) %>%
+  transmute(
+    .draw,
+    D_L = direct_Localization,
+    D_C = direct_Cultivation,
+    I_L = indirect_Localization,
+    I_C = indirect_Cultivation
+  ) %>%
+  mutate(
+    D_L_minus_D_C = D_L - D_C,
+    I_L_minus_I_C = I_L - I_C,
+    D_L_minus_I_L = D_L - I_L,
+    D_C_minus_I_C = D_C - I_C
+  )
+
+summ_contrast <- function(x) {
+  tibble(
+    mean  = mean(x),
+    median = median(x),
+    l95   = quantile(x, 0.025),
+    u95   = quantile(x, 0.975),
+    p_gt0 = mean(x > 0)
+  )
+}
+
+pairwise_summary_long <- pairwise_all %>%
+  pivot_longer(
+    cols = starts_with(c("D_", "I_")),
+    names_to = "contrast",
+    values_to = "value"
+  ) %>%
+  group_by(contrast) %>%
+  summarise(
+    mean  = mean(value),
+    l95   = quantile(value, 0.025),
+    u95   = quantile(value, 0.975),
+    p_gt0 = mean(value > 0),
+    .groups = "drop"
+  )
+
+pairwise_summary_long <- pairwise_summary_long %>%
+  mutate(across(c(mean, l95, u95), ~ .x * 100))
+library(emmeans)
+
+emm <- emmeans(
+  model_zoib,
+  ~ informationSource * scienceTeam,
+  at = list(decision_point = 1),
+  type = "response"
+)
+
+pairs(emm)
+
+```
+```{r}
+library(ggplot2)
+library(tidybayes)
+
+pairwise_all %>%
+  pivot_longer(
+    cols = c(
+      D_L_minus_D_C,
+      I_L_minus_I_C,
+      D_L_minus_I_L,
+      D_C_minus_I_C
+    ),
+    names_to = "contrast",
+    values_to = "value"
+  ) %>%
+  mutate(
+    contrast = factor(
+      contrast,
+      levels = c(
+        "D_L_minus_I_L",
+        "D_C_minus_I_C",
+        "D_L_minus_D_C",
+        "I_L_minus_I_C"
+      ),
+      labels = c(
+        "Direct − Indirect (Localization)",
+        "Direct − Indirect (Cultivation)",
+        "Localization − Cultivation (Direct)",
+        "Localization − Cultivation (Indirect)"
+      )
+    ),
+    value_0_100 = value * 100
+  ) %>%
+  ggplot(aes(x = value_0_100, y = contrast)) +
+  stat_halfeye(.width = c(.5, .8, .95)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Pairwise difference (0–100 scale)",
+    y = NULL
+  ) +
+  theme_classic()
+```
 

@@ -1,0 +1,793 @@
+---
+title: "02-model-analysis"
+output: html_document
+---
+
+Supress messages in this document so that the output is cleaner.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+Import packages.
+
+```{r}
+rm(list = ls())
+options(warn = -1)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(aida)
+library(BayesFactor)
+library(pwr)
+library(effsize)
+library(HDInterval)
+library(tidybayes)
+library(purrr)
+library(brms)
+```
+
+Set up theme for ggplot.
+
+```{r}
+theme_set(theme_aida())
+
+##################################################
+## CSP-colors
+##################################################
+CSP_colors = c(
+  "#7581B3", "#99C2C2", "#C65353", "#E2BA78", "#5C7457", "#575463",
+  "#B0B7D4", "#66A3A3", "#DB9494", "#D49735", "#9BB096", "#D4D3D9",
+  "#414C76", "#993333"
+  )
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = CSP_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = CSP_colors)
+}
+```
+
+## Data preparation
+
+```{r}
+data <- read.csv("./data_preprocessed_allFactors.csv")
+```
+
+Define, encode and relevel factors.
+
+```{r}
+# Define factors
+data %>% mutate(
+  submission_id = as.factor(submission_id),
+  informationSource = as.factor(informationSource),
+  informationSource = relevel(informationSource, ref = "indirect"),
+  scienceTeam = as.factor(scienceTeam),
+  scienceTeam = relevel(scienceTeam, ref = "Cultivation"),
+) -> data
+
+# Reshape data to long format for decision points
+data %>%
+  select(decision1, decision2, informationSource, scienceTeam, submission_id) %>%
+  pivot_longer(
+    cols = c(decision1, decision2),
+    names_to = "decision_point",
+    values_to = "decision"
+  )   %>% mutate(
+    decision_point = if_else(decision_point == "decision1", 0L, 1L),
+  ) -> data_long
+
+# Covert decisions to [0,1] for zoib likelihood
+data_long <- data_long %>%
+  mutate(
+    decision = decision / 100
+  )
+
+# Covert decisions to [0,1] for trunc gaussian likelihood, u = 100, l = 0
+eps <- 0.5
+data <- data %>%
+  mutate(
+    decision1 = pmin(pmax((decision1 + eps) / 100, 0), 1),
+    decision2 = pmin(pmax((decision2 + eps) / 100, 0), 1),
+    update = decision2 - decision1
+  )
+```
+## Important notes
+Important: decision2 is indeed kind of depend on decision1 within one participant.
+	•	In theory: decision1 is fixed by design (slider starts at 50).
+	•	In practice: subjects move the slider differently → decision1 shows by-subject variance.
+	•	decision1 is pre-treatment (not affected by informationSource or scienceTeam).
+
+So decision1 is best thought of as a baseline covariate with random variation, not a manipulated variable.
+
+ANCOVA is better than update, as it accounts for variability in the baseline, but it is tricky to interpret and report, as it is conditional on decision1. ANCOVA does not assume a fixed baseline at the population level; it models baseline variability explicitly, but its effects are conditional on baseline unless marginalised, which is a matter of how the estimand is defined and reported rather than a limitation of the model itself.
+## Model kernels
+
+
+We define three model kernels that differ in how the second decision is related to the first and in how within-submission dependence is handled. The kernels specify the linear predictor structure only; likelihoods and link functions are varied separately.
+
+**kernel_update_score**\
+This kernel models belief change directly by using an update score (e.g., decision2 − decision1) as the outcome and regressing it on the interaction between information source and science team. It targets differences in mean change across conditions and provides a simple change-score perspective on the interaction. Good at directly capturing belief change in an intuitive way, but sensitive to noise, regression-to-the-mean, and boundary effects in the original scale.
+
+Questions: “How much did beliefs move between decision1 and decision2, and does that movement differ by information source and science team?”
+
+Bottom line:
+This kernel is conceptually transparent but statistically fragile; it is best used as a robustness or sanity check rather than the main inferential engine.
+
+
+**kernel_decision2_ancova**\
+This kernel models the second decision as a function of the first decision and the interaction between information source and science team. It corresponds to an ANCOVA-style adjustment for baseline belief and estimates condition differences in decision2 conditional on (or marginalised over) decision1.
+Good at efficiently estimating condition effects on the second decision by adjusting for baseline belief, but its interpretation depends on conditioning or marginalisation over the first decision.
+
+Question: “Given where participants started, how does information source affect their final decision, and does this effect differ by science team?”
+
+Bottom line: This kernel provides a strong, low-variance estimate of \Delta, but requires careful explanation of what “conditional on decision1” means substantively.
+
+**kernel_long_mixed_decision_point**\
+This kernel treats decisions as repeated measures and models ratings in long format with decision point as a predictor, including its interaction with information source and science team. Subject-level random intercepts and slopes for decision point capture within-submission dependence and individual heterogeneity, while allowing the interaction to be evaluated specifically at the second decision point.
+Good at modelling within-submission dependence and individual heterogeneity across decision points, but more complex and potentially less stable with limited data or weakly identified random effects.
+
+Question: “How do decisions evolve across decision points, and does the effect of information source on that evolution differ by science team?”
+
+	•	It explicitly accounts for within-submission dependence, avoiding the fiction that decision1 and decision2 are independent.
+	
+	This kernel is the most faithful to the data-generating structure, but also the most demanding in terms of model specification, diagnostics, and explanation.
+
+```{r}
+## --- brms kernels (likelihood-agnostic bf() formulas) -----------------
+## Assumes factor coding is already set for:
+##   informationSource (D vs I), scienceTeam (Loc vs Cult),
+##   decision_point (1 vs 2 or 0 vs 1), and submission_id as grouping id.
+
+# 1) Change-score / update-score kernel
+# Define update in your data first, e.g. dat$update <- dat$decision2 - dat$decision1
+kernel_update_score <- bf(
+  update ~ informationSource * scienceTeam
+)
+
+# 2) Decision-2 ANCOVA kernel (baseline-adjusted)
+kernel_decision2_ancova <- bf(
+  decision2 ~ decision1 + informationSource * scienceTeam
+)
+
+kernel_decision2_ancova_trunc <- bf(
+  decision2 | trunc(lb = 0, ub = 100) ~ decision1 + informationSource * scienceTeam
+)
+
+# 3) Long-format decision-point mixed kernel (RI + slope for decision_point)
+# decision01 is the long-format outcome (stacked decision1/decision2)
+kernel_long_mixed_decision_point <- bf(
+  decision ~ decision_point + decision_point:(informationSource * scienceTeam) +
+    (1 + decision_point | submission_id)
+)
+
+kernel_long_mixed_decision_point_trunc <- bf(
+  decision | trunc(lb = 0, ub = 100) ~ decision_point + decision_point:(informationSource * scienceTeam) +
+    (1 + decision_point | submission_id)
+)
+
+kernel_list <- list(
+  update_score = kernel_update_score,
+  decision2_ancova = kernel_decision2_ancova,
+  decision2_ancova_trunc = kernel_decision2_ancova_trunc,
+  long_mixed_decision_point = kernel_long_mixed_decision_point,
+  long_mixed_decision_point_trunc = kernel_long_mixed_decision_point_trunc
+)
+
+data_for_kernel <- list(
+  update_score = data,                       # wide data with update/decision1/decision2
+  decision2_ancova = data,                   # wide data
+  decision2_ancova_trunc = data,             # wide data (decision vars on [0,1])
+  long_mixed_decision_point = data_long,     # long data with decision01 + decision_point
+  long_mixed_decision_point_trunc = data_long
+)
+```
+
+Define reduced model variants without interaction for comparison.
+```{r}
+kernel_update_score_red <- bf(
+  update ~ informationSource + scienceTeam
+)
+
+kernel_decision2_ancova_red <- bf(
+  decision2 ~ decision1 + informationSource + scienceTeam
+)
+
+kernel_decision2_ancova_trunc_red <- bf(
+  decision2 | trunc(lb = 0, ub = 100) ~
+    decision1 + informationSource + scienceTeam
+)
+
+kernel_long_mixed_decision_point_red <- bf(
+  decision ~ decision_point +
+    decision_point:informationSource +
+    decision_point:scienceTeam +
+    (1 + decision_point | submission_id)
+)
+
+kernel_long_mixed_decision_point_trunc_red <- bf(
+  decision | trunc(lb = 0, ub = 100) ~
+    decision_point +
+    decision_point:informationSource +
+    decision_point:scienceTeam +
+    (1 + decision_point | submission_id)
+)
+
+kernel_reduced <- list(
+  update_score_red = kernel_update_score_red,
+  decision2_ancova_red = kernel_decision2_ancova_red,
+  decision2_ancova_trunc_red = kernel_decision2_ancova_trunc_red,
+  long_mixed_decision_point_red = kernel_long_mixed_decision_point_red,
+  long_mixed_decision_point_trunc_red = kernel_long_mixed_decision_point_trunc_red
+)
+
+data_reduced <- list(
+  update_score_red = data,                       # wide data with update/decision1/decision2
+  decision2_ancova_red = data,                   # wide data
+  decision2_ancova_trunc_red = data,             # wide data (decision vars on [0,1])
+  long_mixed_decision_point_red = data_long,     # long data with decision01 + decision_point
+  long_mixed_decision_point_trunc_red = data_long
+)
+
+likelihood_for_kernel_reduced <- list(
+  update_score_red = "gauss",
+  decision2_ancova_red = "zoib",
+  decision2_ancova_trunc_red = "gauss",
+  long_mixed_decision_point_red = "zoib",
+  long_mixed_decision_point_trunc_red = "gauss"
+)
+```
+
+## Likelihood functions
+
+We consider two likelihood families for the decision ratings. In both cases, decisions are represented on a probability scale in \([0,1]\) (obtained by rescaling the original 0–100 slider values).
+
+**Truncated Gaussian (TN).**  
+We model ratings with a Gaussian likelihood truncated to the unit interval, \(Y \in [0,1]\). This treats the response as approximately continuous with symmetric noise while enforcing the admissible bounds. It is a pragmatic baseline that captures central tendency well, but it does not explicitly model excess mass at the boundaries.
+
+**Zero–one-inflated Beta (ZOIB).**  
+We model ratings as a three-component mixture: point masses at 0 and 1 for boundary responses (categorical “full rejection” and “full commitment”), and a Beta distribution on \((0,1)\) for graded responses. This separates boundary commitment (\(P(Y=0)\), \(P(Y=1)\)) from graded belief (the Beta mean and precision), allowing interactions to be attributed either to shifts in graded belief or to changes in the probability of boundary choices.
+```{r}
+# ------------------------------------------------------------
+# Likelihoods (families)
+# ------------------------------------------------------------
+likelihood_list <- list(
+  gauss = gaussian(link = "identity"),
+  zoib  = zero_one_inflated_beta(link = "logit", link_phi = "log")
+)
+
+# ------------------------------------------------------------
+# Which likelihood to use for each kernel variant
+# ------------------------------------------------------------
+likelihood_for_kernel <- list(
+  update_score = "gauss",
+  decision2_ancova = "zoib",
+  decision2_ancova_trunc = "gauss",
+  long_mixed_decision_point = "zoib",
+  long_mixed_decision_point_trunc = "gauss"
+)
+```
+## Setup priors
+```{r}
+# ------------------------------------------------------------
+# Priors
+# ------------------------------------------------------------
+
+# Base priors (apply broadly)
+prior_base <- c(
+  prior(normal(0, 1), class = "b"),
+  prior(normal(0, 1), class = "Intercept")
+)
+
+# Gaussian / truncated Gaussian
+prior_gauss <- c(
+  prior_base,
+  prior(exponential(2), class = "sigma")   # residual SD
+)
+
+prior_zoib <- c(
+  # mu (mean of the Beta part) on logit scale
+  prior(normal(0, 1), class = "b"),
+  prior(student_t(3, 0, 2.5), class = "Intercept"),
+
+  # phi (precision) on log scale
+  prior(exponential(2), class = "phi"),
+
+  # zoi: probability of being in the {0,1} inflation component
+  # (logit scale internally; brms default is beta(1,1) on prob scale)
+  prior(beta(8, 2), class = "zoi"),  # mildly prefers high boundary mass
+
+  # coi: conditional probability of 1 given inflation (vs 0)
+  prior(beta(2, 2), class = "coi")   # weakly centered at 0.5
+)
+
+# Extra for hierarchical models (long mixed kernels)
+prior_re <- c(
+  prior(exponential(2), class = "sd"),                 # random effects SDs
+  prior(lkj(2), class = "cor")                         # RE correlations
+)
+
+# Map priors to model names (full models)
+prior_for_kernel <- list(
+  update_score = prior_gauss,
+  decision2_ancova = prior_zoib,
+  decision2_ancova_trunc = prior_gauss,
+  long_mixed_decision_point = c(prior_zoib, prior_re),
+  long_mixed_decision_point_trunc = c(prior_gauss, prior_re)
+)
+
+# Map priors to reduced models (note the _red names)
+prior_for_kernel_reduced <- list(
+  update_score_red = prior_gauss,
+  decision2_ancova_red = prior_zoib,
+  decision2_ancova_trunc_red = prior_gauss,
+  long_mixed_decision_point_red = c(prior_zoib, prior_re),
+  long_mixed_decision_point_trunc_red = c(prior_gauss, prior_re)
+)
+```
+
+## Fit models
+Helper function to fit models given kernels, data, likelihoods, priors, and fit controls.
+```{r}
+# ------------------------------------------------------------
+# Fit controls
+# ------------------------------------------------------------
+fit_ctrl <- list(
+  chains = 4, cores = 4, iter = 4000,
+  control = list(adapt_delta = 0.95, max_treedepth = 12),
+  seed = 1234,
+  refresh = 0,     # suppress sampler progress output
+  silent = TRUE    # suppress most console messages
+)
+
+# ------------------------------------------------------------
+# Runner: fits all kernels in kernel_list using the mapped data + family
+# ------------------------------------------------------------
+fit_models <- function(kernel_list, data_for_kernel,
+                       likelihood_list, likelihood_for_kernel,
+                       prior_for_kernel = NULL,
+                       fit_ctrl = list(),
+                       ...) {
+
+  purrr::imap(kernel_list, function(bf_obj, kname) {
+
+    fam_name <- likelihood_for_kernel[[kname]]
+    if (is.null(fam_name)) stop("No likelihood specified for kernel: ", kname)
+
+    fam <- likelihood_list[[fam_name]]
+    if (is.null(fam)) stop("Unknown likelihood: ", fam_name)
+
+    dat <- data_for_kernel[[kname]]
+    if (is.null(dat)) stop("No data provided for kernel: ", kname)
+
+    pri <- NULL
+    if (!is.null(prior_for_kernel)) {
+      pri <- prior_for_kernel[[kname]]
+      if (is.null(pri)) stop("No prior specified for kernel: ", kname)
+    }
+
+    args <- c(
+      list(
+        formula = bf_obj,
+        data = dat,
+        family = fam,
+        prior = pri,
+        backend = "cmdstanr",
+        save_pars = brms::save_pars(all = TRUE)
+      ),
+      fit_ctrl,
+      list(...)
+    )
+
+    do.call(brms::brm, args)
+  })
+}
+
+```
+Fit full models.
+```{r}
+# ------------------------------------------------------------
+# Run full fits
+# ------------------------------------------------------------
+fit_list <- fit_models(
+  kernel_list = kernel_list,
+  data_for_kernel = data_for_kernel,
+  likelihood_list = likelihood_list,
+  likelihood_for_kernel = likelihood_for_kernel,
+  prior_for_kernel = prior_for_kernel,
+  fit_ctrl = fit_ctrl
+)
+
+fit_list <- setNames(fit_list, names(kernel_list))
+
+```
+
+Fit reduced models.
+```{r}
+# ------------------------------------------------------------
+# Run reduced fits
+# ------------------------------------------------------------
+#fit_list_red <- fit_models(
+#  kernel_list = kernel_reduced,
+#  data_for_kernel = data_reduced,
+#  likelihood_list = likelihood_list,
+#  likelihood_for_kernel = likelihood_for_kernel_reduced,
+#  prior_for_kernel = prior_for_kernel_reduced,
+#  fit_ctrl = fit_ctrl
+#)
+
+#fit_list_red <- setNames(fit_list_red, names(kernel_reduced))
+```
+
+## Save fitted models
+```{r}
+# directory for fitted models
+dir.create("fits", showWarnings = FALSE)
+
+# save each fitted model
+purrr::iwalk(fit_list, function(fit, name) {
+  saveRDS(fit, file = file.path("fits", paste0(name, ".rds")))
+})
+
+# save each fitted reduce model
+#purrr::iwalk(fit_list_red, function(fit, name) {
+#  saveRDS(fit, file = file.path("fits", paste0(name, ".rds")))
+#})
+```
+
+## Posterior analysis for the interaction effect.
+Helper functions.
+```{r}
+
+library(dplyr)
+library(tidyr)
+library(tidybayes)
+
+summ_delta_from_epred <- function(fit,
+                                 data,
+                                 ndraws = 8000,
+                                 delta_type = c("Delta_Team_byInfo", "Delta_DI_byTeam"),
+                                 decision_point_value = 1L,
+                                 marginalize_decision1 = TRUE,
+                                 re_formula = NA) {
+
+  delta_type <- match.arg(delta_type)
+
+  vars <- all.vars(formula(fit)$formula)
+
+  # build newdata: 2x2 cells
+  nd <- tidyr::expand_grid(
+    informationSource = factor(c("indirect", "direct"),
+                               levels = levels(data$informationSource)),
+    scienceTeam = factor(c("Cultivation", "Localization"),
+                         levels = levels(data$scienceTeam))
+  )
+
+  # fix decision point for long models
+  if ("decision_point" %in% vars) {
+    nd <- nd %>% mutate(decision_point = decision_point_value)
+  }
+
+  # marginalize decision1 if present (ANCOVA)
+  if ("decision1" %in% vars) {
+    if (marginalize_decision1) {
+      nd <- nd %>%
+        crossing(row_id = seq_len(nrow(data))) %>%
+        mutate(decision1 = data$decision1[row_id])
+    } else {
+      nd <- nd %>% mutate(decision1 = mean(data$decision1, na.rm = TRUE))
+    }
+  }
+
+  # posterior expected predictions
+  draws <- nd %>%
+    tidybayes::add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    group_by(.draw, informationSource, scienceTeam) %>%
+    summarise(mu = mean(.epred, na.rm = TRUE), .groups = "drop") %>%
+    mutate(cell = paste(informationSource, scienceTeam, sep = "_")) %>%
+    select(.draw, cell, mu) %>%
+    pivot_wider(names_from = cell, values_from = mu)
+
+  # compute Δ per draw
+  delta_draws <- draws %>%
+    transmute(
+      .draw,
+      Delta_DI_byTeam   = (`direct_Localization` - `indirect_Localization`) -
+                          (`direct_Cultivation`  - `indirect_Cultivation`),
+      Delta_Team_byInfo = (`direct_Localization` - `direct_Cultivation`) -
+                          (`indirect_Localization`  - `indirect_Cultivation`)
+    )
+
+  x <- delta_draws[[delta_type]]
+
+  tibble(
+    contrast = delta_type,
+    mean = mean(x),
+    sd = sd(x),
+    q_low = unname(quantile(x, 0.025)),
+    q_high = unname(quantile(x, 0.975)),
+    p_gt0 = mean(x > 0),
+    evid_ratio = mean(x > 0) / mean(x <= 0),
+    n = length(x)
+  )
+}
+```
+
+```{r}
+summ_delta_from_epred(
+  fit  = fit_list$long_mixed_decision_point,
+  data = data_long,
+  delta_type = "Delta_Team_byInfo",
+  decision_point_value = 1L
+)
+```
+```{r}
+library(purrr)
+
+delta_table <- imap_dfr(fit_list, function(fit, name) {
+  dat <- if (grepl("^long_", name)) data_long else data
+  summ_delta_from_epred(
+    fit = fit,
+    data = dat,
+    delta_type = "Delta_Team_byInfo",
+    decision_point_value = 1L
+  ) %>% mutate(model = name, .before = 1)
+})
+
+delta_table
+```
+## Use long mixed decision point model as reference model
+
+```{r}
+summary(fit_list$long_mixed_decision_point)
+```
+Pair-wise comparisons.
+```{r}
+# Pairwise comparisons for the 2x2 design from the reference model
+# Reference model: fit_list$long_mixed_decision_point
+#
+# Outcome is on [0,1]; add_epred_draws() returns posterior expected predictions E[Y]
+# on the response scale (probability), not on the logit scale.
+
+summ_contrast <- function(x, ci = 0.95) {
+  x <- x[is.finite(x)]
+  tibble(
+    mean   = mean(x),
+    sd     = sd(x),
+    q_low  = unname(quantile(x, (1 - ci) / 2)),
+    q_high = unname(quantile(x, 1 - (1 - ci) / 2)),
+    p_gt0  = mean(x > 0),
+    evid_ratio = mean(x > 0) / pmax(mean(x <= 0), .Machine$double.eps),
+    n      = length(x)
+  )
+}
+
+pairwise_epred_2x2 <- function(fit,
+                              data_long,
+                              ndraws = 8000,
+                              decision_point_value = 1L,
+                              re_formula = NA,
+                              ci = 0.95) {
+
+  nd <- expand_grid(
+    informationSource = factor(c("indirect", "direct"),
+                               levels = levels(data_long$informationSource)),
+    scienceTeam = factor(c("Cultivation", "Localization"),
+                         levels = levels(data_long$scienceTeam)),
+    decision_point = decision_point_value
+  )
+
+  cell_draws <- nd %>%
+    add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    group_by(.draw, informationSource, scienceTeam) %>%
+    summarise(mu = mean(.epred, na.rm = TRUE), .groups = "drop") %>%
+    mutate(cell = paste(informationSource, scienceTeam, sep = "_")) %>%
+    select(.draw, cell, mu) %>%
+    pivot_wider(names_from = cell, values_from = mu)
+
+  cells_long <- cell_draws %>%
+    pivot_longer(-.draw, names_to = "cell", values_to = "mu")
+
+  pairwise_draws <- cells_long %>%
+    inner_join(cells_long, by = ".draw", suffix = c("_a", "_b")) %>%
+    filter(cell_a < cell_b) %>%   # keep unique pairs
+    mutate(
+      contrast = paste0(cell_b, " - ", cell_a),  # reversed label
+      value = mu_b - mu_a                        # reversed direction
+    ) %>%
+    select(.draw, contrast, value)
+
+  pairwise_summary <- pairwise_draws %>%
+    group_by(contrast) %>%
+    summarise(
+      mean   = mean(value),
+      sd     = sd(value),
+      q_low  = unname(quantile(value, (1 - ci) / 2)),
+      q_high = unname(quantile(value, 1 - (1 - ci) / 2)),
+      p_gt0  = mean(value > 0),
+      evid_ratio = mean(value > 0) / pmax(mean(value <= 0), .Machine$double.eps),
+      n      = n(),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(abs(mean)))
+
+  list(
+    cell_draws = cell_draws,
+    pairwise_draws = pairwise_draws,
+    pairwise_summary = pairwise_summary
+  )
+}
+
+# run
+ref_fit <- fit_list$long_mixed_decision_point
+
+pw <- pairwise_epred_2x2(
+  fit = ref_fit,
+  data_long = data_long,
+  ndraws = 8000,
+  decision_point_value = 1L,
+  re_formula = NA,
+  ci = 0.95
+)
+
+pw$pairwise_summary
+```
+## Main effect
+```{r}
+# --- build 2x2 cell draws (reusable) -----------------------------------
+cell_epred_draws_2x2 <- function(fit,
+                                 data_long,
+                                 ndraws = 8000,
+                                 decision_point_value = 1L,
+                                 re_formula = NA) {
+
+  nd <- expand_grid(
+    informationSource = factor(c("indirect", "direct"),
+                               levels = levels(data_long$informationSource)),
+    scienceTeam = factor(c("Cultivation", "Localization"),
+                         levels = levels(data_long$scienceTeam)),
+    decision_point = decision_point_value
+  )
+
+  nd %>%
+    add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    group_by(.draw, informationSource, scienceTeam) %>%
+    summarise(mu = mean(.epred, na.rm = TRUE), .groups = "drop")
+}
+# --- main effects from cell draws --------------------------------------
+main_effects_from_epred <- function(fit,
+                                    data_long,
+                                    ndraws = 8000,
+                                    decision_point_value = 1L,
+                                    re_formula = NA,
+                                    ci = 0.95) {
+
+  cell_draws <- cell_epred_draws_2x2(
+    fit = fit,
+    data_long = data_long,
+    ndraws = ndraws,
+    decision_point_value = decision_point_value,
+    re_formula = re_formula
+  )
+
+  # Marginal means per draw
+  marg_info <- cell_draws %>%
+    group_by(.draw, informationSource) %>%
+    summarise(mu = mean(mu), .groups = "drop")
+
+  marg_team <- cell_draws %>%
+    group_by(.draw, scienceTeam) %>%
+    summarise(mu = mean(mu), .groups = "drop")
+
+  # Main effect draws
+  info_draws <- marg_info %>%
+    select(.draw, informationSource, mu) %>%
+    pivot_wider(names_from = informationSource, values_from = mu) %>%
+    transmute(.draw, value = direct - indirect)
+
+  team_draws <- marg_team %>%
+    select(.draw, scienceTeam, mu) %>%
+    pivot_wider(names_from = scienceTeam, values_from = mu) %>%
+    transmute(.draw, value = Localization - Cultivation)
+
+  # Summaries
+  info_sum <- summ_contrast(info_draws$value, ci = ci) %>%
+    mutate(effect = "Main: informationSource (direct - indirect)", .before = 1)
+
+  team_sum <- summ_contrast(team_draws$value, ci = ci) %>%
+    mutate(effect = "Main: scienceTeam (Localization - Cultivation)", .before = 1)
+
+  list(
+    cell_draws = cell_draws,
+    info_draws = info_draws,
+    team_draws = team_draws,
+    summary = bind_rows(info_sum, team_sum)
+  )
+}
+
+# --- run on your reference model (decision point 2) ---------------------
+ref_fit <- fit_list$long_mixed_decision_point
+
+me <- main_effects_from_epred(
+  fit = ref_fit,
+  data_long = data_long,
+  ndraws = 8000,
+  decision_point_value = 1L,  # decision2
+  re_formula = NA,
+  ci = 0.95
+)
+
+# Main effects table (response-scale differences)
+me$summary
+```
+```{r}
+decision_point_epred_ref <- function(fit,
+                                    data_long,
+                                    ndraws = 8000,
+                                    re_formula = NA,
+                                    ci = 0.95) {
+
+  # reference condition: indirect + Cultivation
+  nd <- tibble(
+    informationSource = factor("indirect", levels = levels(data_long$informationSource)),
+    scienceTeam       = factor("Cultivation", levels = levels(data_long$scienceTeam)),
+    decision_point    = c(0L, 1L)  # 0=decision1, 1=decision2
+  )
+
+  draws <- nd %>%
+    add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    mutate(dp = if_else(decision_point == 0L, "dp1", "dp2")) %>%
+    select(.draw, dp, .epred) %>%
+    pivot_wider(names_from = dp, values_from = .epred)
+
+  # baseline at decision point 1 (reference condition)
+  baseline <- summ_contrast(draws$dp1, ci = ci) %>%
+    mutate(effect = "E[decision] at decision point 1 (ref: indirect, Cultivation)", .before = 1)
+
+  # decision-point effect (dp2 - dp1) in the reference condition
+  dp_effect <- summ_contrast(draws$dp2 - draws$dp1, ci = ci) %>%
+    mutate(effect = "Decision-point change (dp2 - dp1) in reference condition", .before = 1)
+
+  list(
+    draws = draws,
+    summary = bind_rows(baseline, dp_effect)
+  )
+}
+
+# --- run ---------------------------------------------------------------
+ref_fit <- fit_list$long_mixed_decision_point
+
+dp_ref <- decision_point_epred_ref(
+  fit = ref_fit,
+  data_long = data_long,
+  ndraws = 8000,
+  re_formula = NA,
+  ci = 0.95
+)
+
+# Posterior summaries on probability scale
+dp_ref$summary
+```
+

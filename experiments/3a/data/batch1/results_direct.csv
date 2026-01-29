@@ -1,0 +1,123 @@
+submission_id,age,attentionCheck,attentionCheckResult,comments,decision1,decision2,education,experiment_duration,experiment_end_time,experiment_start_time,gender,informationSource,itemName,itemNr,languages,probs,prolific_pid,prolific_session_id,prolific_study_id,responseTime,scienceTeam,trialNR
+1124,49,,,,10,NA,Graduated College,162535,1746798681368,1746798518833,female,direct,,1,,,66839058a88759d4987e3e1c,681e07aa9207276e17993090,681de8bec9bb6145fe65df53,13832,Localization,0
+1124,49,,,,NA,80,Graduated College,162535,1746798681368,1746798518833,female,direct,,1,,,66839058a88759d4987e3e1c,681e07aa9207276e17993090,681de8bec9bb6145fe65df53,18814,Localization,0
+1162,59,,,,10,NA,Higher degree,270710,1746799048919,1746798778210,male,direct,,1,,,63cac85f8519383ef0422593,681e089e014c4f5f39120fc1,681de8bec9bb6145fe65df53,28933,Localization,0
+1162,59,,,,NA,90,Higher degree,270710,1746799048919,1746798778210,male,direct,,1,,,63cac85f8519383ef0422593,681e089e014c4f5f39120fc1,681de8bec9bb6145fe65df53,23306,Localization,0
+1118,26,,,None,50,NA,Graduated High-school,114539,1746798615885,1746798501346,male,direct,,1,English,,5f828002935db93a4d29d577,681e07aba297eb9abc5d3025,681de8bec9bb6145fe65df53,13391,Localization,0
+1118,26,,,None,NA,90,Graduated High-school,114539,1746798615885,1746798501346,male,direct,,1,English,,5f828002935db93a4d29d577,681e07aba297eb9abc5d3025,681de8bec9bb6145fe65df53,12107,Localization,0
+1119,27,,,,79,NA,Graduated College,120300,1746798631813,1746798511513,female,direct,,1,english,,67acda05ca320fb05492087e,681e07a8b0883defe6450e3f,681de8bec9bb6145fe65df53,5091,Localization,0
+1119,27,,,,NA,74,Graduated College,120300,1746798631813,1746798511513,female,direct,,1,english,,67acda05ca320fb05492087e,681e07a8b0883defe6450e3f,681de8bec9bb6145fe65df53,7759,Localization,0
+1120,34,,,Thank you!,31,NA,Graduated College,116203,1746798593330,1746798477127,male,direct,,1,English,,6781e2745214f6bcc5c6d6c0,681e07b6c08f022b76adcd52,681de8bec9bb6145fe65df53,8298,Localization,0
+1120,34,,,Thank you!,NA,84,Graduated College,116203,1746798593330,1746798477127,male,direct,,1,English,,6781e2745214f6bcc5c6d6c0,681e07b6c08f022b76adcd52,681de8bec9bb6145fe65df53,8609,Localization,0
+1121,61,,,,60,NA,Graduated High-school,126777,1746798650269,1746798523492,male,direct,,1,English,,645179915e31c1aeb3dc8129,681e07aeb968123a85f01e2f,681de8bec9bb6145fe65df53,8128,Localization,0
+1121,61,,,,NA,85,Graduated High-school,126777,1746798650269,1746798523492,male,direct,,1,English,,645179915e31c1aeb3dc8129,681e07aeb968123a85f01e2f,681de8bec9bb6145fe65df53,5432,Localization,0
+1122,31,,,,22,NA,Higher degree,157939,1746798679349,1746798521410,female,direct,,1,English,,5ea8018973b0521f70fe7ba1,681e07ab9cbc355b12a70c19,681de8bec9bb6145fe65df53,7613,Localization,0
+1122,31,,,,NA,77,Higher degree,157939,1746798679349,1746798521410,female,direct,,1,English,,5ea8018973b0521f70fe7ba1,681e07ab9cbc355b12a70c19,681de8bec9bb6145fe65df53,8889,Localization,0
+1123,36,,,,90,NA,Higher degree,166495,1746798681252,1746798514757,male,direct,,1,English,,67c7da9b83ea5f02a7da1c93,681e07a7959ce6885411aea5,681de8bec9bb6145fe65df53,12700,Localization,0
+1123,36,,,,NA,100,Higher degree,166495,1746798681252,1746798514757,male,direct,,1,English,,67c7da9b83ea5f02a7da1c93,681e07a7959ce6885411aea5,681de8bec9bb6145fe65df53,8454,Localization,0
+1125,27,,,,15,NA,Graduated College,161801,1746798689150,1746798527349,male,direct,,1,English,,63127690860023ab6b50a0b2,681e07aa26b0452c3cecb03b,681de8bec9bb6145fe65df53,20132,Localization,0
+1125,27,,,,NA,85,Graduated College,161801,1746798689150,1746798527349,male,direct,,1,English,,63127690860023ab6b50a0b2,681e07aa26b0452c3cecb03b,681de8bec9bb6145fe65df53,16357,Localization,0
+1126,58,,,,32,NA,Graduated College,171549,1746798690108,1746798518559,female,direct,,1,english,,668b1f12cacd66a9de9d5394,681e07ab4e3105eca8443144,681de8bec9bb6145fe65df53,13736,Localization,0
+1126,58,,,,NA,73,Graduated College,171549,1746798690108,1746798518559,female,direct,,1,english,,668b1f12cacd66a9de9d5394,681e07ab4e3105eca8443144,681de8bec9bb6145fe65df53,9216,Localization,0
+1127,30,,,,30,NA,Graduated High-school,202894,1746798711059,1746798508165,male,direct,,1,English,,66d29886c53f1949f8275cba,681e07a819419407008745a5,681de8bec9bb6145fe65df53,15119,Localization,0
+1127,30,,,,NA,75,Graduated High-school,202894,1746798711059,1746798508165,male,direct,,1,English,,66d29886c53f1949f8275cba,681e07a819419407008745a5,681de8bec9bb6145fe65df53,15333,Localization,0
+1128,36,,,I love learning about companion planting and using it irl. I would be tempted to start a small test batch with the companion plant vs the normal crop and start to compare notes.,25,NA,Graduated High-school,196559,1746798716546,1746798519987,female,direct,,1,English,,66a40ef92583bab0623b11fe,681e07a7001afbabe73a15e6,681de8bec9bb6145fe65df53,17360,Localization,0
+1128,36,,,I love learning about companion planting and using it irl. I would be tempted to start a small test batch with the companion plant vs the normal crop and start to compare notes.,NA,75,Graduated High-school,196559,1746798716546,1746798519987,female,direct,,1,English,,66a40ef92583bab0623b11fe,681e07a7001afbabe73a15e6,681de8bec9bb6145fe65df53,6272,Localization,0
+1138,54,,,,16,NA,Graduated College,262953,1746798797243,1746798534290,male,direct,,1,english,,6605cd2fc352ad987368723a,681e07b964e87edc20a4532a,681de8bec9bb6145fe65df53,12982,Localization,0
+1138,54,,,,NA,95,Graduated College,262953,1746798797243,1746798534290,male,direct,,1,english,,6605cd2fc352ad987368723a,681e07b964e87edc20a4532a,681de8bec9bb6145fe65df53,8078,Localization,0
+1139,56,,,Thank you for the opportunity.,15,NA,Graduated College,204239,1746798817273,1746798613034,male,direct,,1,English,,6129781ecb8007ce6248a915,681e07eaf4041095c6920c7b,681de8bec9bb6145fe65df53,22621,Localization,0
+1139,56,,,Thank you for the opportunity.,NA,50,Graduated College,204239,1746798817273,1746798613034,male,direct,,1,English,,6129781ecb8007ce6248a915,681e07eaf4041095c6920c7b,681de8bec9bb6145fe65df53,9972,Localization,0
+1129,67,,,,50,NA,Graduated High-school,184960,1746798726064,1746798541104,male,direct,,1,English,,5a9e9fc46219a30001f54994,681e07c682f3b4c50746efa0,681de8bec9bb6145fe65df53,14146,Localization,0
+1129,67,,,,NA,98,Graduated High-school,184960,1746798726064,1746798541104,male,direct,,1,English,,5a9e9fc46219a30001f54994,681e07c682f3b4c50746efa0,681de8bec9bb6145fe65df53,9331,Localization,0
+1130,70,,,Thanks!,50,NA,Graduated High-school,213595,1746798731091,1746798517496,female,direct,,1,English,,62faba5f904642df812944fa,681e07ac2b00743d2a1517ac,681de8bec9bb6145fe65df53,19215,Localization,0
+1130,70,,,Thanks!,NA,84,Graduated High-school,213595,1746798731091,1746798517496,female,direct,,1,English,,62faba5f904642df812944fa,681e07ac2b00743d2a1517ac,681de8bec9bb6145fe65df53,18616,Localization,0
+1131,36,,,,54,NA,Graduated High-school,107743,1746798731802,1746798624059,female,direct,,1,English,,60bf0588f7ab7b40dd34083f,681e07e0b6c16e9ad0d78464,681de8bec9bb6145fe65df53,5783,Localization,0
+1131,36,,,,NA,60,Graduated High-school,107743,1746798731802,1746798624059,female,direct,,1,English,,60bf0588f7ab7b40dd34083f,681e07e0b6c16e9ad0d78464,681de8bec9bb6145fe65df53,5683,Localization,0
+1132,27,,,,60,NA,Graduated High-school,68850,1746798733883,1746798665033,female,direct,,1,English,,6658cd07d45dca942abbf1c0,681e08203fa49f9810df0a07,681de8bec9bb6145fe65df53,10012,Localization,0
+1132,27,,,,NA,100,Graduated High-school,68850,1746798733883,1746798665033,female,direct,,1,English,,6658cd07d45dca942abbf1c0,681e08203fa49f9810df0a07,681de8bec9bb6145fe65df53,3015,Localization,0
+1133,62,,,none,49,NA,Graduated High-school,225032,1746798746073,1746798521041,female,direct,,1,English,,5d12110b40b8e0001a7b55b6,681e07a90ff065ae9a11aee3,681de8bec9bb6145fe65df53,17572,Localization,0
+1133,62,,,none,NA,78,Graduated High-school,225032,1746798746073,1746798521041,female,direct,,1,English,,5d12110b40b8e0001a7b55b6,681e07a90ff065ae9a11aee3,681de8bec9bb6145fe65df53,10559,Localization,0
+1134,55,,,,25,NA,Graduated College,208282,1746798756033,1746798547751,male,direct,,1,English,,672668e7ac41bfeb906b47d4,681e07ca47ec261e0a65ecf2,681de8bec9bb6145fe65df53,19543,Localization,0
+1134,55,,,,NA,100,Graduated College,208282,1746798756033,1746798547751,male,direct,,1,English,,672668e7ac41bfeb906b47d4,681e07ca47ec261e0a65ecf2,681de8bec9bb6145fe65df53,12580,Localization,0
+1135,63,,,,77,NA,Graduated College,212028,1746798775518,1746798563490,female,direct,,1,english,,669eba3ad8d7d49177bc50d0,681e07dc45423f341cd659a3,681de8bec9bb6145fe65df53,11204,Localization,0
+1135,63,,,,NA,99,Graduated College,212028,1746798775518,1746798563490,female,direct,,1,english,,669eba3ad8d7d49177bc50d0,681e07dc45423f341cd659a3,681de8bec9bb6145fe65df53,5446,Localization,0
+1136,61,,,,10,NA,Graduated High-school,184092,1746798780148,1746798596056,male,direct,,1,English,,58cd0bc2a47dbb000171dc8b,681e07f907901b695fbe80e2,681de8bec9bb6145fe65df53,14510,Localization,0
+1136,61,,,,NA,100,Graduated High-school,184092,1746798780148,1746798596056,male,direct,,1,English,,58cd0bc2a47dbb000171dc8b,681e07f907901b695fbe80e2,681de8bec9bb6145fe65df53,15410,Localization,0
+1140,36,,,,75,NA,Graduated College,302448,1746798818212,1746798515764,female,direct,,1,English,,546e8bc6fdf99b2bc7ebd029,681e07af36624d53b880cb58,681de8bec9bb6145fe65df53,9376,Localization,0
+1140,36,,,,NA,85,Graduated College,302448,1746798818212,1746798515764,female,direct,,1,English,,546e8bc6fdf99b2bc7ebd029,681e07af36624d53b880cb58,681de8bec9bb6145fe65df53,5838,Localization,0
+1145,31,,,n/a,97,NA,Graduated High-school,236897,1746798791654,1746798554757,male,direct,,1,english,,63c7c285b3b893b2578385a4,681e080e7e026ed7ddb4baa8,681de8bec9bb6145fe65df53,15289,Localization,0
+1145,31,,,n/a,NA,91,Graduated High-school,236897,1746798791654,1746798554757,male,direct,,1,english,,63c7c285b3b893b2578385a4,681e080e7e026ed7ddb4baa8,681de8bec9bb6145fe65df53,15523,Localization,0
+1150,29,,,,36,NA,Higher degree,297601,1746798889706,1746798592105,female,direct,,1,english,,6658b187cb2020d6b19f884a,681e07de6db5422de3aafa42,681de8bec9bb6145fe65df53,36816,Localization,0
+1150,29,,,,NA,91,Higher degree,297601,1746798889706,1746798592105,female,direct,,1,english,,6658b187cb2020d6b19f884a,681e07de6db5422de3aafa42,681de8bec9bb6145fe65df53,8251,Localization,0
+1137,49,,,,50,NA,Graduated High-school,147657,1746798786782,1746798639125,male,direct,,1,English,,5cb20f2d7c917b00172dfef5,681e0821c5c49bab27c0fc21,681de8bec9bb6145fe65df53,13090,Localization,0
+1137,49,,,,NA,98,Graduated High-school,147657,1746798786782,1746798639125,male,direct,,1,English,,5cb20f2d7c917b00172dfef5,681e0821c5c49bab27c0fc21,681de8bec9bb6145fe65df53,9978,Localization,0
+1142,35,,,,80,NA,Graduated College,174015,1746798823493,1746798649478,male,direct,,1,english,,67ca97d8aacc1c5e88237e13,681e082fd04abec6dd0b60d7,681de8bec9bb6145fe65df53,10552,Localization,0
+1142,35,,,,NA,80,Graduated College,174015,1746798823493,1746798649478,male,direct,,1,english,,67ca97d8aacc1c5e88237e13,681e082fd04abec6dd0b60d7,681de8bec9bb6145fe65df53,33360,Localization,0
+1144,53,,,Farming is always difficult but with information like what I was given it would be worth the risk to try the new crop planting,25,NA,Graduated College,290547,1746798847671,1746798557124,female,direct,,1,English,,5f17553ce0feb10c3dd2b16a,681e07d139f98acad1e7e7c0,681de8bec9bb6145fe65df53,15908,Localization,0
+1144,53,,,Farming is always difficult but with information like what I was given it would be worth the risk to try the new crop planting,NA,90,Graduated College,290547,1746798847671,1746798557124,female,direct,,1,English,,5f17553ce0feb10c3dd2b16a,681e07d139f98acad1e7e7c0,681de8bec9bb6145fe65df53,18674,Localization,0
+1146,34,,,Very interesting study,38,NA,Graduated College,323386,1746798857709,1746798534323,female,direct,,1,English,,6658e797b169774877e72acb,681e07b63cc85f646f85e7d1,681de8bec9bb6145fe65df53,15350,Localization,0
+1146,34,,,Very interesting study,NA,75,Graduated College,323386,1746798857709,1746798534323,female,direct,,1,English,,6658e797b169774877e72acb,681e07b63cc85f646f85e7d1,681de8bec9bb6145fe65df53,16934,Localization,0
+1156,25,,,,25,NA,Higher degree,58031,1746799000779,1746798942748,male,direct,,1,English,,671787f3637cc9e223817070,681e07b204c9c79d1f65ed9f,681de8bec9bb6145fe65df53,4748,Localization,0
+1156,25,,,,NA,75,Higher degree,58031,1746799000779,1746798942748,male,direct,,1,English,,671787f3637cc9e223817070,681e07b204c9c79d1f65ed9f,681de8bec9bb6145fe65df53,5080,Localization,0
+1141,56,,,,48,NA,Higher degree,206438,1746798824468,1746798618030,female,direct,,1,English,,67cf1052df2474400a53e602,681e0810573913b930b97907,681de8bec9bb6145fe65df53,23620,Localization,0
+1141,56,,,,NA,80,Higher degree,206438,1746798824468,1746798618030,female,direct,,1,English,,67cf1052df2474400a53e602,681e0810573913b930b97907,681de8bec9bb6145fe65df53,19223,Localization,0
+1143,50,,,,50,NA,Graduated College,193559,1746798843992,1746798650433,male,direct,,1,,,5b1386089663ee0001461b6e,681e0826a881af7d16efa861,681de8bec9bb6145fe65df53,24194,Localization,0
+1143,50,,,,NA,85,Graduated College,193559,1746798843992,1746798650433,male,direct,,1,,,5b1386089663ee0001461b6e,681e0826a881af7d16efa861,681de8bec9bb6145fe65df53,5788,Localization,0
+1151,31,,,,81,NA,Graduated College,354547,1746798903504,1746798548957,male,direct,,1,English,,67410901eabe995471a42192,681e07af10f403fb98d07c4f,681de8bec9bb6145fe65df53,16189,Localization,0
+1151,31,,,,NA,92,Graduated College,354547,1746798903504,1746798548957,male,direct,,1,English,,67410901eabe995471a42192,681e07af10f403fb98d07c4f,681de8bec9bb6145fe65df53,13790,Localization,0
+1154,20,,,,59,NA,Graduated College,414699,1746798941689,1746798526990,female,direct,,1,english,,67fce2ec87c9866707eb37d6,681e07b5288c220e9f0721c8,681de8bec9bb6145fe65df53,37737,Localization,0
+1154,20,,,,NA,100,Graduated College,414699,1746798941689,1746798526990,female,direct,,1,english,,67fce2ec87c9866707eb37d6,681e07b5288c220e9f0721c8,681de8bec9bb6145fe65df53,19896,Localization,0
+1148,25,,,,25,NA,Higher degree,354192,1746798911318,1746798557126,male,direct,,1,English,,671787f3637cc9e223817070,681e07b204c9c79d1f65ed9f,681de8bec9bb6145fe65df53,58635,Localization,0
+1148,25,,,,NA,75,Higher degree,354192,1746798911318,1746798557126,male,direct,,1,English,,671787f3637cc9e223817070,681e07b204c9c79d1f65ed9f,681de8bec9bb6145fe65df53,25375,Localization,0
+1149,43,,,,15,NA,Graduated College,362494,1746798883794,1746798521300,female,direct,,1,British ,,673741d5e8999c8a575d36b1,681e07a9be821e3c17f9f82a,681de8bec9bb6145fe65df53,83549,Localization,0
+1149,43,,,,NA,84,Graduated College,362494,1746798883794,1746798521300,female,direct,,1,British ,,673741d5e8999c8a575d36b1,681e07a9be821e3c17f9f82a,681de8bec9bb6145fe65df53,21380,Localization,0
+1152,46,,,"interesting, would like to do more like this. thank you.",50,NA,Graduated College,154410,1746798913971,1746798759561,female,direct,,1,English,,66a7f83a3e18dd8dc65b900a,681e089fbf5c057f4214642b,681de8bec9bb6145fe65df53,12228,Localization,0
+1152,46,,,"interesting, would like to do more like this. thank you.",NA,90,Graduated College,154410,1746798913971,1746798759561,female,direct,,1,English,,66a7f83a3e18dd8dc65b900a,681e089fbf5c057f4214642b,681de8bec9bb6145fe65df53,9014,Localization,0
+1157,24,,,all is fine,80,NA,Higher degree,385833,1746799004185,1746798618352,male,direct,,1,"English, Swahili",,65feaaac53eb219f09ad5ea0,681e07b1af45d3e0e93856ae,681de8bec9bb6145fe65df53,15621,Localization,0
+1157,24,,,all is fine,NA,100,Higher degree,385833,1746799004185,1746798618352,male,direct,,1,"English, Swahili",,65feaaac53eb219f09ad5ea0,681e07b1af45d3e0e93856ae,681de8bec9bb6145fe65df53,15962,Localization,0
+1159,32,,,None,100,NA,Higher degree,477749,1746799017966,1746798540217,female,direct,,1,English,,67700724f07c694ad429287a,681e07b84e698bdc1c69055a,681de8bec9bb6145fe65df53,19818,Localization,0
+1159,32,,,None,NA,100,Higher degree,477749,1746799017966,1746798540217,female,direct,,1,English,,67700724f07c694ad429287a,681e07b84e698bdc1c69055a,681de8bec9bb6145fe65df53,7926,Localization,0
+1153,44,,,,16,NA,Graduated College,399171,1746798920197,1746798521027,male,direct,,1,english,,66cfab152c56aa0472529001,681e07b2af44c434e77028ef,681de8bec9bb6145fe65df53,37244,Localization,0
+1153,44,,,,NA,76,Graduated College,399171,1746798920197,1746798521027,male,direct,,1,english,,66cfab152c56aa0472529001,681e07b2af44c434e77028ef,681de8bec9bb6145fe65df53,22865,Localization,0
+1158,41,,,,49,NA,Graduated College,484138,1746799017279,1746798533141,male,direct,,1,English,,5df3c82961b48a2907204173,681e07ba82436c21ce780101,681de8bec9bb6145fe65df53,9035,Localization,0
+1158,41,,,,NA,84,Graduated College,484138,1746799017279,1746798533141,male,direct,,1,English,,5df3c82961b48a2907204173,681e07ba82436c21ce780101,681de8bec9bb6145fe65df53,15639,Localization,0
+1160,24,,,,32,NA,Graduated College,401541,1746799031243,1746798629702,male,direct,,1,English,,5d2e07cac3651500019f0b0e,681e082157b2962a3261cfae,681de8bec9bb6145fe65df53,7929,Localization,0
+1160,24,,,,NA,100,Graduated College,401541,1746799031243,1746798629702,male,direct,,1,English,,5d2e07cac3651500019f0b0e,681e082157b2962a3261cfae,681de8bec9bb6145fe65df53,5177,Localization,0
+1161,41,,,Thanks for the opportunity,28,NA,Graduated College,115275,1746799033216,1746798917941,male,direct,,1,English,,5c70974403f85b0001af8d5d,681e093c9ff63fb3cd046ccd,681de8bec9bb6145fe65df53,9420,Localization,0
+1161,41,,,Thanks for the opportunity,NA,49,Graduated College,115275,1746799033216,1746798917941,male,direct,,1,English,,5c70974403f85b0001af8d5d,681e093c9ff63fb3cd046ccd,681de8bec9bb6145fe65df53,5399,Localization,0
+1164,30,,,,65,NA,Graduated College,571543,1746799112549,1746798541006,male,direct,,1,English Language,,6733ca6572d14762aea012ad,681e07c50882f39c709137ec,681de8bec9bb6145fe65df53,5942,Localization,0
+1164,30,,,,NA,76,Graduated College,571543,1746799112549,1746798541006,male,direct,,1,English Language,,6733ca6572d14762aea012ad,681e07c50882f39c709137ec,681de8bec9bb6145fe65df53,8443,Localization,0
+1167,30,,,None,65,NA,Graduated College,309298,1746799152078,1746798842780,male,direct,,1,English,,67f184a3b82990251abd1592,681e07f5f9ab7e548ecb79c8,681de8bec9bb6145fe65df53,17981,Localization,0
+1167,30,,,None,NA,91,Graduated College,309298,1746799152078,1746798842780,male,direct,,1,English,,67f184a3b82990251abd1592,681e07f5f9ab7e548ecb79c8,681de8bec9bb6145fe65df53,9190,Localization,0
+1170,27,,,,63,NA,Graduated High-school,402246,1746799282210,1746798879964,male,direct,,1,English,,645ccbfda67f6b93dd19122f,681e0806009d6cb73275b5a7,681de8bec9bb6145fe65df53,9399,Localization,0
+1170,27,,,,NA,59,Graduated High-school,402246,1746799282210,1746798879964,male,direct,,1,English,,645ccbfda67f6b93dd19122f,681e0806009d6cb73275b5a7,681de8bec9bb6145fe65df53,5906,Localization,0
+1163,23,,,None,67,NA,Higher degree,434443,1746799073807,1746798639364,male,direct,,1,English,,6678a880e2ce2ba0e38b0d17,681e07b08167094d1f5ef4bc,681de8bec9bb6145fe65df53,22559,Localization,0
+1163,23,,,None,NA,100,Higher degree,434443,1746799073807,1746798639364,male,direct,,1,English,,6678a880e2ce2ba0e38b0d17,681e07b08167094d1f5ef4bc,681de8bec9bb6145fe65df53,6765,Localization,0
+1165,39,,,,50,NA,Higher degree,618974,1746799135024,1746798516050,male,direct,,1,english,,5b9eddfed259900001106b05,681e07aea297eb9abc5d3028,681de8bec9bb6145fe65df53,12813,Localization,0
+1165,39,,,,NA,90,Higher degree,618974,1746799135024,1746798516050,male,direct,,1,english,,5b9eddfed259900001106b05,681e07aea297eb9abc5d3028,681de8bec9bb6145fe65df53,5255,Localization,0
+1166,32,,,,75,NA,Higher degree,411768,1746799149687,1746798737919,female,direct,,1,English,,651fbf405f6a2b4756a93b5a,681e07c0919d204582a186c7,681de8bec9bb6145fe65df53,14902,Localization,0
+1166,32,,,,NA,86,Higher degree,411768,1746799149687,1746798737919,female,direct,,1,English,,651fbf405f6a2b4756a93b5a,681e07c0919d204582a186c7,681de8bec9bb6145fe65df53,18597,Localization,0
+1168,31,,,It was very thoughtful.,85,NA,Graduated College,495458,1746799181918,1746798686460,male,direct,,1,English,,675cc658de4e926333e668a6,681e082c1ac357e8a2babbc1,681de8bec9bb6145fe65df53,41060,Localization,0
+1168,31,,,It was very thoughtful.,NA,79,Graduated College,495458,1746799181918,1746798686460,male,direct,,1,English,,675cc658de4e926333e668a6,681e082c1ac357e8a2babbc1,681de8bec9bb6145fe65df53,5352,Localization,0
+1169,56,,,,41,NA,Graduated High-school,312407,1746799220230,1746798907823,female,direct,,1,english,,67e57570814ffb2111a0b46d,681e0931e7898216bb705fa1,681de8bec9bb6145fe65df53,20102,Localization,0
+1169,56,,,,NA,84,Graduated High-school,312407,1746799220230,1746798907823,female,direct,,1,english,,67e57570814ffb2111a0b46d,681e0931e7898216bb705fa1,681de8bec9bb6145fe65df53,7285,Localization,0
+1171,25,,,The study was nice,60,NA,Higher degree,801699,1746799356609,1746798554910,male,direct,,1,English,,6712618d06bcc8e18704a774,681e07ba69a09a9d30089352,681de8bec9bb6145fe65df53,58526,Localization,0
+1171,25,,,The study was nice,NA,70,Higher degree,801699,1746799356609,1746798554910,male,direct,,1,English,,6712618d06bcc8e18704a774,681e07ba69a09a9d30089352,681de8bec9bb6145fe65df53,32967,Localization,0
+1172,31,,,"Cultivation: Soil conditions optimization.
+Localization: Locating wild populations.",88,NA,Higher degree,881176,1746799405430,1746798524254,female,direct,,1,English,,67ccbcc0a659ba65853fbd72,681e07af905ca807e080c301,681de8bec9bb6145fe65df53,22015,Localization,0
+1172,31,,,"Cultivation: Soil conditions optimization.
+Localization: Locating wild populations.",NA,84,Higher degree,881176,1746799405430,1746798524254,female,direct,,1,English,,67ccbcc0a659ba65853fbd72,681e07af905ca807e080c301,681de8bec9bb6145fe65df53,7385,Localization,0
+1173,27,,,N/a,16,NA,Higher degree,693336,1746799393175,1746798699839,male,direct,,1,English,,67d046be60d06ac435106f0d,681e0831ab5d52af96dc4355,681de8bec9bb6145fe65df53,29501,Localization,0
+1173,27,,,N/a,NA,77,Higher degree,693336,1746799393175,1746798699839,male,direct,,1,English,,67d046be60d06ac435106f0d,681e0831ab5d52af96dc4355,681de8bec9bb6145fe65df53,46341,Localization,0
+1174,30,,,none,3,NA,Graduated College,706509,1746799606714,1746798900205,male,direct,,1,english,,67ea403939a55d29ba40a648,681e07ad153cc2105d64bb31,681de8bec9bb6145fe65df53,44192,Localization,0
+1174,30,,,none,NA,50,Graduated College,706509,1746799606714,1746798900205,male,direct,,1,english,,67ea403939a55d29ba40a648,681e07ad153cc2105d64bb31,681de8bec9bb6145fe65df53,14728,Localization,0
+1175,34,,,good survey,79,NA,Graduated College,1185974,1746799737219,1746798551245,female,direct,,1,english,,6791743f67427ac472404470,681e07ad26cf8d749528ea7b,681de8bec9bb6145fe65df53,20327,Localization,0
+1175,34,,,good survey,NA,84,Graduated College,1185974,1746799737219,1746798551245,female,direct,,1,english,,6791743f67427ac472404470,681e07ad26cf8d749528ea7b,681de8bec9bb6145fe65df53,6669,Localization,0
+1176,54,,,,51,NA,Graduated College,863774,1746800030379,1746799166605,male,direct,,1,English,,6739e4d9335667b4852ccf4e,681e0a0cdfed596045993e8c,681de8bec9bb6145fe65df53,34137,Localization,0
+1176,54,,,,NA,100,Graduated College,863774,1746800030379,1746799166605,male,direct,,1,English,,6739e4d9335667b4852ccf4e,681e0a0cdfed596045993e8c,681de8bec9bb6145fe65df53,15245,Localization,0
+1177,25,,,,90,NA,Higher degree,195988,1746800337235,1746800141247,male,direct,,1,,,675d61c63a00cb308be414f7,681e0d7a6e301d06e4e58d48,681de8bec9bb6145fe65df53,12528,Localization,0
+1177,25,,,,NA,100,Higher degree,195988,1746800337235,1746800141247,male,direct,,1,,,675d61c63a00cb308be414f7,681e0d7a6e301d06e4e58d48,681de8bec9bb6145fe65df53,11015,Localization,0
+1178,19,,,,76,NA,Graduated High-school,79791,1746800677430,1746800597639,male,direct,,1,English,,67d60d26704111a05e1a325b,681e082536f62bec3fb5deed,681de8bec9bb6145fe65df53,5656,Localization,0
+1178,19,,,,NA,70,Graduated High-school,79791,1746800677430,1746800597639,male,direct,,1,English,,67d60d26704111a05e1a325b,681e082536f62bec3fb5deed,681de8bec9bb6145fe65df53,5986,Localization,0
+1179,34,,,,42,NA,Graduated High-school,466117,1746801551749,1746801085632,female,direct,,1,,,64f3036a5b5f2feae0b1f51b,681e1185706d1ec537fab7e2,681de8bec9bb6145fe65df53,34265,Localization,0
+1179,34,,,,NA,94,Graduated High-school,466117,1746801551749,1746801085632,female,direct,,1,,,64f3036a5b5f2feae0b1f51b,681e1185706d1ec537fab7e2,681de8bec9bb6145fe65df53,10023,Localization,0

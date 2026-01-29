@@ -125,6 +125,10 @@ sumStats %>% ggplot(aes(x = reproduction, y = proportion, fill = reproduction)) 
   facet_wrap(~choice, ncol = 2)
 ```
 
+```{r}
+sumStats
+```
+
 ## List of all reproductions
 
 ```{r}
