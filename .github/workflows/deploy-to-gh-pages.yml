@@ -17,7 +17,7 @@ jobs:
           - experiments/2a/
           - experiments/2b/
           - experiments/3a/
-          #- experiments/3b/
+          #- experiments/3b/# temporarily disabled due to build issues
 
     runs-on: ubuntu-latest
     steps:
