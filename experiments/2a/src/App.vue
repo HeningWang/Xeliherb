@@ -18,7 +18,7 @@
 
           <div style="background-color:#FF9999"><strong>Information from Mission Control:</strong> <br> To survive on Xelifan-3, you need constant supply of the seeds of a plant called xeliherb, which grows exclusively on Xelifan-3.</div>
 
-          <p>Prior to arrival on Xeliherb-3 your Science Team has been sent ahead to explore the planet. You have since lost contact with the Science Team, but you did receive one short report. Here is what the Science Team reported:</p>
+          <p>Prior to arrival on Xelifan-3 your Science Team has been sent ahead to explore the planet. You have since lost contact with the Science Team, but you did receive one short report. Here is what the Science Team reported:</p>
 
           <div style="background-color:#AAAAFF"><strong>Information from Science Team:</strong> <br> A high yield of xeliherb is associated with the presence of ralocrop.
           </div>

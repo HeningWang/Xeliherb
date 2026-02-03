@@ -1,0 +1,820 @@
+---
+title: "CogSci2026"
+output: html_document
+---
+
+Supress messages in this document so that the output is cleaner.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+Import packages.
+
+```{r}
+rm(list = ls())
+options(warn = -1)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(aida)
+library(BayesFactor)
+library(pwr)
+library(effsize)
+library(HDInterval)
+library(tidybayes)
+library(purrr)
+library(brms)
+```
+
+Set up theme for ggplot.
+
+```{r}
+theme_set(theme_aida())
+
+##################################################
+## CSP-colors
+##################################################
+CSP_colors = c(
+  "#7581B3", "#99C2C2", "#C65353", "#E2BA78", "#5C7457", "#575463",
+  "#B0B7D4", "#66A3A3", "#DB9494", "#D49735", "#9BB096", "#D4D3D9",
+  "#414C76", "#993333"
+  )
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = CSP_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = CSP_colors)
+}
+```
+
+# Exp 1a: Choose and Explain - Recall Task
+## Load data, data preparation for recall task
+```{r}
+data_recall_batch1 <- read.csv("../data+analysis/02-exp2a-choose-explain-recall/01b-processed-data-pilot-2a.csv")
+data_recall_batch2 <- read.csv("../data+analysis/02-exp2a-choose-explain-recall/03-raw-data-batch2-cogsci2026_annotated.csv")
+```
+
+Rename reproClass in batch1 to responseType, and make values in responseType capitalized first letter.
+```{r}
+data_recall_batch1 <- data_recall_batch1 %>%
+  rename(responseType = reproClass) %>%
+  mutate(
+    responseType = str_to_sentence(responseType)
+  )
+```
+
+Stack two dfs together.
+```{r}
+data_recall <- bind_rows(
+  data_recall_batch1,
+  data_recall_batch2
+)
+```
+
+Substract responses into a cleaned df.
+```{r}
+library(stringr)
+
+data_recall2 <- data_recall %>%
+  mutate(
+    response     = na_if(str_squish(as.character(response)), ""),
+    responseType = na_if(str_squish(as.character(responseType)), "")
+  )
+
+data_clean <- data_recall2 %>%
+  group_by(submission_id) %>%
+  summarise(
+    response     = first(na.omit(response)),
+    responseType = first(na.omit(responseType)),
+    .groups = "drop"
+  )
+```
+
+Rename Causal in responseType to Causation for consistency.
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    responseType = if_else(responseType == "Causal", "Causation", responseType)
+  )
+```
+
+Encode responseType into 0 and 1. If causation, then 1, else 0.
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    responseType_bin = if_else(
+      responseType == "Causation",
+      1L,
+      0L
+    )
+  )
+```
+
+## Plot
+```{r}
+# ----- helper: bootstrap CI for multinomial proportions within each response -----
+boot_ci_props <- function(df, B = 2000, conf = 0.95) {
+  # df must contain columns: responseType
+  types <- sort(unique(df$responseType))
+  n <- nrow(df)
+
+  # bootstrap resampling of rows (trials)
+  boot_mat <- replicate(B, {
+    idx <- sample.int(n, size = n, replace = TRUE)
+    tab <- table(factor(df$responseType[idx], levels = types))
+    as.numeric(tab) / n
+  })
+
+  alpha <- (1 - conf) / 2
+  tibble(
+    responseType = types,
+    prop_hat = as.numeric(table(factor(df$responseType, levels = types))) / n,
+    ci_low  = apply(boot_mat, 1, quantile, probs = alpha),
+    ci_high = apply(boot_mat, 1, quantile, probs = 1 - alpha),
+    n = n
+  )
+}
+
+# ----- compute plot data with bootstrap CIs -----
+data_plot <- data_clean %>%
+  filter(!is.na(response), !is.na(responseType)) %>%
+  group_by(response) %>%
+  group_modify(~ boot_ci_props(.x, B = 2000, conf = 0.95)) %>%
+  ungroup() %>%
+  rename(proportion = prop_hat)
+
+# ----- compute plot data with bootstrap CIs -----
+data_plot %>%   mutate(
+    experiment = "experiment1a"
+  ) -> data_plot_exp1a
+
+# ----- plot -----
+ggplot(data_plot, aes(x = responseType, y = proportion, fill = responseType)) +
+  geom_col() +
+  geom_errorbar(
+    aes(ymin = ci_low, ymax = ci_high),
+    width = 0.15
+  ) +
+  facet_wrap(~ response) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    x = NULL,                 # omit x-axis title
+    y = NULL,
+    fill = "Response"
+  ) +
+  coord_flip() +
+  theme_aida() +
+  theme(
+    legend.position = "top",
+    text = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    strip.text = element_text(size = 16),
+    axis.title.y = element_text(size = 16)
+  ) -> p_proportion_choice
+
+p_proportion_choice
+
+ggsave(
+  filename = "results_exp2a.png",
+  plot = p_proportion_choice,
+  width = 8,
+  height = 5,
+  dpi = 300
+)
+  
+```
+
+## Fit a glm model
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    response = relevel(
+      factor(response),
+      ref = "only xeliherb"
+    )
+  )
+
+m2_bayes <- brm(
+  responseType_bin ~ response + (1 | submission_id),
+  data = data_clean,
+  family = bernoulli(link = "logit"),
+  prior = c(
+    prior(normal(0, 1.5), class = "b"),          # fixed effects
+    prior(normal(0, 1.5), class = "Intercept"),
+    prior(exponential(1), class = "sd")          # random effects SD
+  ),
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 1000,
+  seed = 123,
+  backend = "cmdstanr"
+)
+
+summary(m2_bayes)
+
+hypothesis(
+  m2_bayes,
+  "responseboth xeliherb and ralocrop > 0"
+)
+# responseboth xeliherb and ralocrop    2.235      1.095   2.041   0.0413 * 
+```
+
+# Exp 1b: Choose and Explain - Advice Task
+## Data preparation
+Load the data.
+
+```{r}
+data <- read.csv("../data+analysis/02-exp2b-choose-explain-advice/01-data-annotated-pilot-04.csv")
+```
+Collapse some categories.
+"nonsense", "none" -> "none"
+"directive-xeliherb", "correlation" -> "neutral"
+"directive-ralocrop", "causation" -> "causation"
+```{r}
+data <- data %>%
+  mutate(
+    responseType = case_when(
+      responseType %in% c("nonsense", "none") ~ "none",
+      responseType %in% c("directive-xeliherb", "correlation") ~ "neutral",
+      responseType %in% c("directive-ralocrop", "causation") ~ "causation",
+      TRUE ~ responseType
+    )
+  )
+```
+
+Encode response type into 0 and 1.
+1 are: "causation", "directive-ralocrop"
+0 are everything else.
+
+```{r}
+library(dplyr)
+
+data_clean <- data %>%
+  group_by(submission_id) %>%
+  summarise(
+    response = response[measure == "choice"],
+    responseType = responseType[measure == "reproduction"],
+    .groups = "drop"
+  )  %>% mutate(
+    responseType_bin = if_else(
+      responseType %in% c("causation", "directive-ralocrop"),
+      1L,
+      0L
+    )
+  )
+```
+
+## Plot
+```{r}
+
+data_plot <- data_clean %>%
+  filter(!is.na(response), !is.na(responseType)) %>%
+  group_by(response) %>%
+  group_modify(~ boot_ci_props(.x, B = 2000, conf = 0.95)) %>%
+  ungroup() %>%
+  rename(proportion = prop_hat)
+
+data_plot %>%   mutate(
+    responseType = str_to_sentence(responseType)
+  ) -> data_plot
+
+# Prepare data for plotting both exps
+data_plot_exp1b <- data_plot %>%
+  mutate(
+    experiment = "experiment1b"
+  )
+
+# ----- plot -----
+ggplot(data_plot, aes(x = responseType, y = proportion, fill = responseType)) +
+  geom_col() +
+  geom_errorbar(
+    aes(ymin = ci_low, ymax = ci_high),
+    width = 0.15
+  ) +
+  facet_wrap(~ response) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    x = NULL,                 # omit x-axis title
+    y = NULL,
+    fill = "Response"
+  ) +
+  coord_flip() +
+  theme_aida() +
+  theme(
+    legend.position = "top",
+    text = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    strip.text = element_text(size = 16),
+    axis.title.y = element_text(size = 16)
+  ) -> p_proportion_choice_advice
+
+p_proportion_choice_advice
+
+ggsave(
+  filename = "results_exp2b.png",
+  plot = p_proportion_choice_advice,
+  width = 8,
+  height = 5,
+  dpi = 300
+)
+```
+
+## Fit a glm model
+
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    response = relevel(
+      factor(response),
+      ref = "only xeliherb"
+    )
+  )
+
+m2_bayes <- brm(
+  responseType_bin ~ response + (1 | submission_id),
+  data = data_clean,
+  family = bernoulli(link = "logit"),
+  prior = c(
+    prior(normal(0, 1.5), class = "b"),          # fixed effects
+    prior(normal(0, 1.5), class = "Intercept"),
+    prior(exponential(1), class = "sd")          # random effects SD
+  ),
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 1000,
+  seed = 123,
+  backend = "cmdstanr"
+)
+
+summary(m2_bayes)
+
+hypothesis(
+  m2_bayes,
+  "responseboth xeliherb and ralocrop > 0"
+)
+```
+# Combined plot for both exp 1a and 1b
+```{r}
+data_plot_combined <- bind_rows(
+  data_plot_exp1a,
+  data_plot_exp1b
+)
+
+
+data_plot_combined <- data_plot_combined %>%
+  mutate(
+    response = str_replace_all(
+      response,
+      c(
+        "both xeliherb and ralocrop" = "both xeliherb\nand ralocrop",
+        "only xeliherb" = "only\nxeliherb"
+      )
+    )
+  )
+
+CSP_colors_combined_plot = c(
+  "#C65353", "#7581B3", "#99C2C2", "#E2BA78", "#5C7457", "#575463",
+  "#B0B7D4", "#66A3A3", "#DB9494", "#D49735", "#9BB096", "#D4D3D9",
+  "#414C76", "#993333"
+  )
+
+
+ggplot(data_plot_combined, aes(x = responseType, y = proportion, fill = responseType)) +
+  geom_col() +
+  geom_errorbar(
+    aes(ymin = ci_low, ymax = ci_high),
+    width = 0.15
+  ) +
+  facet_grid(rows = vars(response), cols = vars(experiment),
+             labeller = labeller(
+      experiment = as_labeller(c(
+        "experiment1a" = "Experiment 1a: recall",
+        "experiment1b" = "Experiment 1b: advice"
+      )))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values = CSP_colors_combined_plot) +
+  labs(
+    x = NULL,                 # omit x-axis title
+    y = NULL,
+    fill = "Response"
+  ) +
+  coord_flip() +
+  theme_aida() +
+  theme(
+    legend.position = "none",
+    text = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    strip.text = element_text(size = 14),
+    strip.text.y = element_text(size = 14),
+    axis.title.y = element_text(size = 16)
+  ) -> p_proportion_choice_combined
+
+
+p_proportion_choice_combined
+
+ggsave(
+  filename = "results_exp2_combined.png",
+  plot = p_proportion_choice_combined,
+  width = 7.2,
+  height = 3.6,
+  units = "in",
+  dpi = 400
+)
+```
+
+# Exp. 2
+## Data preparation
+
+```{r}
+data <- read.csv("../data+analysis/03-exp3ab-speakerRelevance/data_preprocessed_allFactors.csv")
+```
+
+Define, encode and relevel factors.
+
+```{r}
+library(dplyr)
+library(tidyr)
+# Define factors
+data %>% mutate(
+  submission_id = as.factor(submission_id),
+  informationSource = as.factor(informationSource),
+  informationSource = relevel(informationSource, ref = "indirect"),
+  scienceTeam = as.factor(scienceTeam),
+  scienceTeam = relevel(scienceTeam, ref = "Cultivation"),
+) -> data
+
+# Reshape data to long format for decision points
+data %>%
+  select(decision1, decision2, informationSource, scienceTeam, submission_id) %>%
+  pivot_longer(
+    cols = c(decision1, decision2),
+    names_to = "decision_point",
+    values_to = "decision"
+  )   %>% mutate(
+    decision_point = if_else(decision_point == "decision1", 0L, 1L),
+  ) -> data_long
+
+# Covert decisions to [0,1] for zoib likelihood
+data_long <- data_long %>%
+  mutate(
+    decision = decision / 100
+  )
+```
+
+## Plot
+```{r}
+library(ggplot2)
+
+# Prepare data for plotting
+data_plot <- data %>%
+  mutate(
+    scienceTeam = factor(
+      scienceTeam,
+      levels = c("Cultivation", "Localization"),
+      labels = c("intervention-oriented", "diagnostic-oriented")
+    )
+  ) %>%
+  mutate(
+    scienceTeam = relevel(scienceTeam, ref = "intervention-oriented")
+  ) %>%
+  mutate(    update = (update + 0.05)/(100 + 0.05))
+
+# Plot mean change of causal confidence by information source and speaker goal orientation
+r <- data_plot %>%
+  ggplot(aes(x = informationSource, y = update, color = scienceTeam)) +
+  stat_summary(
+    fun.data = mean_cl_boot,
+    geom = "point",
+    position = position_dodge(0.5),
+    size = 3
+  ) +
+  stat_summary(
+    fun.data = mean_cl_boot,
+    geom = "errorbar",
+    width = 0.2,
+    position = position_dodge(0.5),
+    linewidth = 0.8
+  ) +
+  labs(
+    x = "Directness of Information",
+    y = "Mean Change of Causal Confidence",
+    color = "Speaker Goal Orientation"
+  ) +
+  theme_aida() +
+  theme(
+    legend.position = "top",
+    text = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    strip.text = element_text(size = 16),
+    axis.title.y = element_text(size = 16)
+  ) +
+    theme(
+    text = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    strip.text = element_text(size = 15),
+    strip.text.y = element_text(size = 12, angle = 0),
+    plot.margin = margin(8, 8, 8, 14),
+    panel.spacing.y = unit(0.25, "lines")
+  )
+
+
+# Display the plot
+r
+
+# Save the plot to a file
+ggsave("results_exp_3.png", plot = r, width = 7.2, height = 4,
+       units = "in",dpi = 400)
+```
+## Fit model
+```{r}
+library(brms)
+kernel_long_mixed_decision_point <- bf(
+  decision ~ decision_point + decision_point:(informationSource * scienceTeam) +
+    (1 + decision_point | submission_id)
+)
+lik <- zero_one_inflated_beta(link = "logit", link_phi = "log")
+
+prior_zoib <- c(
+  # mu (mean of the Beta part) on logit scale
+  prior(normal(0, 1), class = "b"),
+  prior(student_t(3, 0, 2.5), class = "Intercept"),
+
+  # phi (precision) on log scale
+  prior(exponential(2), class = "phi"),
+
+  # zoi: probability of being in the {0,1} inflation component
+  # (logit scale internally; brms default is beta(1,1) on prob scale)
+  prior(beta(8, 2), class = "zoi"),  # mildly prefers high boundary mass
+
+  # coi: conditional probability of 1 given inflation (vs 0)
+  prior(beta(2, 2), class = "coi")   # weakly centered at 0.5
+)
+
+m_zoib_long_mixed_decision_point <- brm(
+  formula = kernel_long_mixed_decision_point,
+  data = data_long,
+  family = lik,
+  prior = prior_zoib,
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 1000,
+  backend = "cmdstanr",
+  seed = 123
+)
+```
+```{r}
+summary(m_zoib_long_mixed_decision_point)
+```
+
+## Pair-wise comparison
+```{r}
+# Posterior expected predictions (response scale) for:
+#  1) Cell means (2x2 at decision point 2)
+#  2) Delta interaction:
+#        Delta_Team_byInfo = (direct_Loc - direct_Cult) - (indirect_Loc - indirect_Cult)
+#  3) Main effects (informationSource, scienceTeam) as marginal contrasts
+#  4) Pairwise comparisons among the 4 cells
+#
+# Model: m_zoib_long_mixed_decision_point (brmsfit)
+# Data:  data_long with factors informationSource, scienceTeam, decision_point (0/1), outcome decision in [0,1]
+
+library(dplyr)
+library(tidyr)
+library(tidybayes)
+
+# ---------- summary helper ----------
+summ_contrast <- function(x, ci = 0.95) {
+  x <- x[is.finite(x)]
+  tibble(
+    mean   = mean(x),
+    sd     = sd(x),
+    q_low  = unname(quantile(x, (1 - ci) / 2)),
+    q_high = unname(quantile(x, 1 - (1 - ci) / 2)),
+    p_gt0  = mean(x > 0),
+    evid_ratio = mean(x > 0) / pmax(mean(x <= 0), .Machine$double.eps),
+    n      = length(x)
+  )
+}
+
+# ---------- core extractor ----------
+epred_contrasts_2x2 <- function(fit,
+                               data_long,
+                               ndraws = 8000,
+                               decision_point_value = 1L, # 0=decision1, 1=decision2
+                               re_formula = NA,
+                               ci = 0.95,
+                               # explicit labels (must match levels(data_long$...))
+                               info_levels = c("indirect", "direct"),
+                               team_levels = c("Cultivation", "Localization")) {
+
+  # 2x2 grid at decision point of interest
+  nd <- expand_grid(
+    informationSource = factor(info_levels, levels = levels(data_long$informationSource)),
+    scienceTeam       = factor(team_levels, levels = levels(data_long$scienceTeam)),
+    decision_point    = decision_point_value
+  )
+
+  # posterior expected predictions per draw, per cell
+  cell_draws_long <- nd %>%
+    add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    group_by(.draw, informationSource, scienceTeam) %>%
+    summarise(mu = mean(.epred, na.rm = TRUE), .groups = "drop") %>%
+    mutate(cell = paste(informationSource, scienceTeam, sep = "_"))
+
+  # wide: one column per cell
+  cell_draws <- cell_draws_long %>%
+    select(.draw, cell, mu) %>%
+    pivot_wider(names_from = cell, values_from = mu)
+
+  # expected column names
+  nm_d_loc  <- "direct_Localization"
+  nm_d_cult <- "direct_Cultivation"
+  nm_i_loc  <- "indirect_Localization"
+  nm_i_cult <- "indirect_Cultivation"
+
+  needed <- c(nm_d_loc, nm_d_cult, nm_i_loc, nm_i_cult)
+  missing <- setdiff(needed, names(cell_draws))
+  if (length(missing) > 0) {
+    stop(
+      "Missing expected cell columns:\n",
+      paste0("  - ", missing, collapse = "\n"),
+      "\nAvailable columns:\n",
+      paste0("  - ", names(cell_draws), collapse = "\n")
+    )
+  }
+
+  # Delta interaction draws (your definition)
+  delta_draws <- cell_draws %>%
+    transmute(
+      .draw,
+      Delta_Team_byInfo = (`direct_Localization` - `direct_Cultivation`) -
+                          (`indirect_Localization` - `indirect_Cultivation`)
+    )
+
+  # Main effects via marginalization (averaging over the other factor)
+  # Main_Info: direct - indirect (averaged over team)
+  # Main_Team: Localization - Cultivation (averaged over info)
+  main_draws <- cell_draws %>%
+    transmute(
+      .draw,
+      Main_Info = ((`direct_Localization` + `direct_Cultivation`)/2) -
+                  ((`indirect_Localization` + `indirect_Cultivation`)/2),
+      Main_Team = ((`direct_Localization` + `indirect_Localization`)/2) -
+                  ((`direct_Cultivation` + `indirect_Cultivation`)/2)
+    )
+
+  # Pairwise among the 4 cells (reversed direction: b - a)
+  cells_long2 <- cell_draws %>%
+    select(.draw, all_of(needed)) %>%
+    pivot_longer(-.draw, names_to = "cell", values_to = "mu")
+
+  pairwise_draws <- cells_long2 %>%
+    inner_join(cells_long2, by = ".draw", suffix = c("_a", "_b")) %>%
+    filter(cell_a < cell_b) %>%
+    mutate(
+      contrast = paste0(cell_b, " - ", cell_a),  # reversed label
+      value    = mu_b - mu_a                      # reversed direction
+    ) %>%
+    select(.draw, contrast, value)
+
+  # Summaries
+  summary_cells <- cell_draws_long %>%
+    group_by(informationSource, scienceTeam) %>%
+    summarise(
+      mean   = mean(mu),
+      sd     = sd(mu),
+      q_low  = unname(quantile(mu, (1 - ci)/2)),
+      q_high = unname(quantile(mu, 1 - (1 - ci)/2)),
+      .groups = "drop"
+    ) %>%
+    mutate(effect = paste(informationSource, scienceTeam, sep = "_")) %>%
+    select(effect, mean, sd, q_low, q_high)
+
+  summary_delta <- summ_contrast(delta_draws$Delta_Team_byInfo, ci = ci) %>%
+    mutate(effect = "Delta_Team_byInfo", .before = 1)
+
+  summary_main <- bind_rows(
+    summ_contrast(main_draws$Main_Info, ci = ci) %>%
+      mutate(effect = "Main: informationSource (direct - indirect)", .before = 1),
+    summ_contrast(main_draws$Main_Team, ci = ci) %>%
+      mutate(effect = "Main: scienceTeam (Localization - Cultivation)", .before = 1)
+  )
+
+  summary_pairwise <- pairwise_draws %>%
+    group_by(contrast) %>%
+    summarise(
+      mean   = mean(value),
+      sd     = sd(value),
+      q_low  = unname(quantile(value, (1 - ci)/2)),
+      q_high = unname(quantile(value, 1 - (1 - ci)/2)),
+      p_gt0  = mean(value > 0),
+      evid_ratio = mean(value > 0) / pmax(mean(value <= 0), .Machine$double.eps),
+      n      = n(),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(abs(mean))) %>%
+    rename(effect = contrast)
+
+  list(
+    cell_draws = cell_draws,
+    delta_draws = delta_draws,
+    main_draws = main_draws,
+    pairwise_draws = pairwise_draws,
+    summary_cells = summary_cells,
+    summary_delta = summary_delta,
+    summary_main = summary_main,
+    summary_pairwise = summary_pairwise
+  )
+}
+
+# ---------- run on your model ----------
+res <- epred_contrasts_2x2(
+  fit = m_zoib_long_mixed_decision_point,
+  data_long = data_long,
+  ndraws = 8000,
+  decision_point_value = 1L,  # decision2
+  re_formula = NA,
+  ci = 0.95
+)
+
+# 1) Posterior expected cell means (response scale)
+res$summary_cells
+
+# 2) Delta interaction (response scale)
+res$summary_delta
+
+# 3) Main effects (response scale)
+res$summary_main
+
+# 4) Pairwise comparisons (response scale; reversed direction: b - a)
+res$summary_pairwise
+```
+```{r}
+# ------------------------------------------------------------
+# Posterior expected predictions for decision point 1 vs 2
+# (marginalized over informationSource and scienceTeam)
+# ------------------------------------------------------------
+decision_point_effect_epred <- function(fit,
+                                        data_long,
+                                        ndraws = 8000,
+                                        re_formula = NA,
+                                        ci = 0.95) {
+
+  # newdata grid: both decision points, all conditions
+  nd <- expand_grid(
+    informationSource = levels(data_long$informationSource),
+    scienceTeam       = levels(data_long$scienceTeam),
+    decision_point    = c(0L, 1L)  # 0 = decision1, 1 = decision2
+  )
+
+  draws <- nd %>%
+    add_epred_draws(
+      fit,
+      ndraws = ndraws,
+      re_formula = re_formula,
+      allow_new_levels = TRUE
+    ) %>%
+    group_by(.draw, decision_point) %>%
+    summarise(mu = mean(.epred, na.rm = TRUE), .groups = "drop") %>%
+    mutate(dp = if_else(decision_point == 0L, "decision1", "decision2")) %>%
+    select(.draw, dp, mu) %>%
+    pivot_wider(names_from = dp, values_from = mu)
+
+  # summaries
+  s_decision1 <- summ_contrast(draws$decision1, ci) %>%
+    mutate(effect = "E[belief] at decision 1", .before = 1)
+
+  s_decision2 <- summ_contrast(draws$decision2, ci) %>%
+    mutate(effect = "E[belief] at decision 2", .before = 1)
+
+  s_diff <- summ_contrast(draws$decision2 - draws$decision1, ci) %>%
+    mutate(effect = "Decision-point effect (decision2 − decision1)", .before = 1)
+
+  bind_rows(s_decision1, s_decision2, s_diff)
+}
+
+# ------------------------------------------------------------
+# Run
+# ------------------------------------------------------------
+dp_effects <- decision_point_effect_epred(
+  fit = m_zoib_long_mixed_decision_point,
+  data_long = data_long,
+  ndraws = 8000,
+  re_formula = NA
+)
+
+dp_effects
+```
+
+

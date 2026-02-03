@@ -1,0 +1,117 @@
+---
+title: "03-hypothesistesting"
+output: html_document
+---
+
+Supress messages in this document so that the output is cleaner.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+Import packages.
+
+```{r}
+rm(list = ls())
+options(warn = -1)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(aida)
+library(BayesFactor)
+library(pwr)
+library(effsize)
+library(HDInterval)
+library(tidybayes)
+library(purrr)
+library(brms)
+```
+
+Set up theme for ggplot.
+
+```{r}
+theme_set(theme_aida())
+
+##################################################
+## CSP-colors
+##################################################
+CSP_colors = c(
+  "#7581B3", "#99C2C2", "#C65353", "#E2BA78", "#5C7457", "#575463",
+  "#B0B7D4", "#66A3A3", "#DB9494", "#D49735", "#9BB096", "#D4D3D9",
+  "#414C76", "#993333"
+  )
+# setting theme colors globally
+scale_colour_discrete <- function(...) {
+  scale_colour_manual(..., values = CSP_colors)
+}
+scale_fill_discrete <- function(...) {
+  scale_fill_manual(..., values = CSP_colors)
+}
+```
+
+## Data preparation
+Load the data.
+
+```{r}
+data <- read.csv("./01-data-annotated-pilot-04.csv")
+```
+
+Encode response type into 0 and 1.
+1 are: "causation", "directive-ralocrop"
+0 are everything else.
+
+```{r}
+d <- read_csv('01-data-annotated-pilot-04.csv') %>% 
+  mutate(responseType = case_when(measure == 'choice' ~ response,
+                                  TRUE ~ responseType))
+```
+
+```{r}
+library(dplyr)
+
+data_clean <- data %>%
+  group_by(submission_id) %>%
+  summarise(
+    response = response[measure == "choice"],
+    responseType = responseType[measure == "reproduction"],
+    .groups = "drop"
+  )  %>% mutate(
+    responseType_bin = if_else(
+      responseType %in% c("causation", "directive-ralocrop"),
+      1L,
+      0L
+    )
+  )
+```
+
+## Show proportion of choice
+```{r}
+data_clean %>% group_by(response) %>%
+  count(responseType) %>%
+  mutate(proportion = n / sum(n))
+```
+
+## Fit a glm model
+
+```{r}
+library(lme4)
+data_clean <- data_clean %>%
+  mutate(
+    response = relevel(
+      factor(response),
+      ref = "only xeliherb"
+    )
+  )
+m2 <- glmer(
+  responseType_bin ~ response + (1 | submission_id),
+  data = data_clean,
+  family = binomial(link = "logit"),
+  control = glmerControl(optimizer = "bobyqa")
+)
+
+```
+```{r}
+summary(m2)
+```
+
