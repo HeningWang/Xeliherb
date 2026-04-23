@@ -1,7 +1,26 @@
-/.DS_Store
-data+analysis/.DS_Store
-data+analysis/.DS_Store
-data+analysis/03-exp3ab-speakerRelevance/fits/.DS_Store
-experiments/.DS_Store
-data+analysis/03-exp3ab-speakerRelevance/.DS_Store
-data+analysis/.DS_Store
+# macOS
+.DS_Store
+**/.DS_Store
+
+# R
+.Rhistory
+.Rproj.user/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+
+# LaTeX compiled outputs (keep source, not PDF)
+writing/**/*.pdf
