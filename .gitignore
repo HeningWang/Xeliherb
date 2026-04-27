@@ -24,3 +24,9 @@
 
 # LaTeX compiled outputs (keep source, not PDF)
 writing/**/*.pdf
+
+# latexdiff generated artifacts (regenerable from main_submitted.tex and main.tex)
+writing/**/main_diff.*
+
+# Claude Code local config
+.claude/

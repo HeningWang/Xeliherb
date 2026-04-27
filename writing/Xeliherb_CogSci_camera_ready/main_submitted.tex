@@ -61,7 +61,7 @@
 \definecolor{glaucous-bright}{HTML}{5B7DB1} % muted blue
 \definecolor{opal-bright}{HTML}{3FA7A3}     % teal/green
 
-\title{When Correlation means Causation: Pragmatic Factors modulate Causal Implicatures in Decision-Making Contexts}
+\title{When Correlation means Causation: Pragmatic Factors modulate Causal Implicatures in Decision-Making Contexts }
 
 %%% Format authors using helper functions from authblk package %%%
 \author[1]{\mbox{Hening Wang (hening.wang@uni-tuebingen.de)}}
@@ -87,7 +87,7 @@
 
 Correlational statements (e.g., “$X$ is associated with $Y$”) can be interpreted as conveying a causal relationship. 
 Recent work suggests that such interpretations may be legitimate pragmatic inferences, especially in decision-relevant contexts. 
-Here, we investigate whether causal enrichment of correlational language affects memory recall and message passing, and how pragmatic features of the communicative context modulate it.
+Here, we investigate whether causal enrichment of correlational language affect memory recall and message passing, how pragmatic features of the communicative context modulate them.
 Our findings support a pragmatic account of causal enrichment of correlational language.
 
 %In Experiment~1, participants who chose to act on a putative cause were more likely to reproduce correlational statements using explicitly causal language, especially when communicating advice to others, indicating that causal enrichment is reflected not only in immediate action but also in downstream communication. In Experiment~2, we introduce a belief-update paradigm that measures changes in willingness to intervene relative to an individually measured baseline, while manipulating pragmatic factors such as speaker goal orientation and directness of information.
@@ -103,56 +103,53 @@ causal implicature; correlational language; pragmatic inference; decision making
     \caption{Overview of the experimental paradigm across studies. 
 \textbf{(A) Cover story and critical information:} Participants were placed in a fictional space-colonization scenario in which they aimed to increase the yield of a target plant (\textit{xeliherb}). They received correlational information stating that a high yield of \textit{xeliherb} is associated with the presence of another plant (\textit{ralocrop}). 
 \textbf{(B) Binary forced-choice task:} Participants chose whether to cultivate both plants (interpreted as intervening on the putative cause) or only \textit{xeliherb}. 
-\textbf{(C) Experiment~1: message passing via free production:} After making the same choice as in (B), participants either recalled the information (Exp.~1a) or reproduced it as advice to another agent (Exp.~1b), allowing assessment of how correlational statements are reported from memory or communicated through message passing. 
+\textbf{(C) Experiment~1: message passing via free production:} After making the same choice as in (B), participants either recalled the information (Exp.~1a) or reproduced it as advice to another agent (Exp.~1b), allowing assessment of how correlational statements are reported from memory or communicated message passing. 
 \textbf{(D) Experiment~2: belief updating under manipulation of pragmatic factors:} Participants provided slider ratings for their willingness to cultivate \textit{ralocrop} before and after the critical statement, interpretable as \textit{causal belief change}. Pragmatic factors—directness of communication and speaker goal orientation—were manipulated to test how context modulates causal belief updating.}
     \label{fig:overview}
 \end{figure*}
 
 \section{Introduction}
 
-Most ``Stats 101'' courses eagerly warn that \textit{correlation does not mean causation}.
-Yet outside the classroom, correlational claims are rarely encountered as abstract, decontextualized statements.
-Instead, they appear in headlines, summaries of scientific findings, expert advice, or reports embedded in broader narratives.
-In such settings, interpretation is shaped not only by statistical knowledge, but also by background beliefs, assumptions about speakers' goals, and general world knowledge.
+Most ``Stats 101'' courses eagerly warn that \textit{correlation does not mean causation}. 
+Yet outside the classroom, correlational claims are rarely encountered as abstract, decontextualized statements. 
+Instead, they appear in headlines, summaries of scientific findings, expert advice, or reports embedded in broader narratives. 
+In such settings, interpretation is shaped not only by statistical knowledge, but also by background beliefs, assumptions about speakers’ goals, and general world knowledge. 
 In line with this, a growing body of evidence shows that people often interpret correlational statements in causal terms, even when no explicit causal language is used \citep{adams2017readers,huff2023lie,seifert2022causal}.
-The theoretical question is what mechanism delivers this causal enrichment.
-There are at least two possible accounts, and they should be clearly separated.
 
-On one account, the effect reflects stable \emph{preferences in assignments of cause and effect} \citep{lassiter2024rationality}: systematic structural biases driven by linguistic features such as syntactic structure, topicality, and implicit-causality verb semantics \citep{hartshorne_what_2014,bott_verbs_2014}.
-\citet{gershman_causal_2023} document that participants reliably pick one causal direction over another given a bare association statement, and label such effects ``causal implicatures.''
-The mechanism in their framing, however, is closer to a structural bias than to a Gricean inference: the preference is described as automatic and linguistic rather than as a product of reasoning about a speaker's alternatives or communicative goals.
+This pattern invites a more nuanced interpretation of the above warning itself. 
+A correlational statement does not assert a causal relationship, but neither does it rule one out. 
+Following \citet{reichenbach1991direction}, one may hold that the truth of a correlational statement presupposes some kind of causal direction, however indirect. 
+So, if speaker and listener know that information about direct causation is relevant, inferring causation from correlational language may be legitimate.
 
-On a second account, causal enrichment of correlational language can be viewed as a genuine pragmatic inference: listeners reason about why a speaker chose an indirect (correlational) formulation in a given context, and enrich the statement with causal meaning when that enrichment makes the utterance maximally relevant to the listener's decision problem \citep{SperberWilson1995,BenzvanRooijOptimalAssertions2007,goodman2016pragmatic}.
-Following \citet{reichenbach1991direction}, a correlational statement presupposes some causal structure, however indirect.
-When speaker and listener share the assumption that direct causation is the relevant question, the listener can read the speaker's choice to mention a correlation as a signal that causation is in view.
+In recent work, \citet{gershman_causal_2023} experimentally showed systematic preferences in assigning cause and effect based on correlational statements like ``$A$ is correlated with $B$.''
+This can be interpreted as suggestive evidence for \textit{causal implicatures}, which people draw automatically from correlation language.
+However, related work on implicit causality shows that linguistic structure can systematically influence causal attribution \citep{hartshorne_what_2014,bott_verbs_2014} without necessarily invoking pragmatic implicatures, and follow-up work by \citet{lassiter2024rationality} argues that \citeauthor{gershman_causal_2023}'s findings are better conceptualized as a \emph{PACE effect} (Preferences in Assignments of Cause and Effect) rather than a genuine pragmatic inference.
 
-The two accounts make sharply different predictions for how causal enrichment should behave in communicative context.
-A structural bias account predicts roughly stable enrichment across speakers, contexts, and communicative goals, because the mechanism that drives it is local to the utterance.
-A pragmatic account predicts that enrichment varies systematically with features that matter for speaker reasoning: whether the message was directly addressed to the listener or merely overheard; whether the speaker's goal makes correlational information decision-relevant or merely incidental; and whether the listener, once they form a causal interpretation, carries it into downstream communication.
-
-Consistent with the pragmatic account, \citet{lassiter2024rationality} provide positive evidence for this view.
-Their experiment introduced a fictional space-colonization scenario in which a Science Team provided information to participants facing a binary decision (see Figure~\ref{fig:overview}A--B).
-The scenario involved a plant called \textit{xeliherb}, important for the space colonists' survival.
-In the critical condition, the Science Team presents an association statement of the form (\ref{bsp:association}), where \textit{ralocrop} is another plant.
+However, \citeauthor{lassiter2024rationality} also provide positive evidence in favor of a \textit{pragmatic inference view} of causal enrichment of correlational statements.
+Their experiment introduced a fictional space-colonization scenario in which a Science Team provided information for participants who then had to make an important (binary) decision (see Figure~\ref{fig:overview}A--B).
+The scenario involved a plant called \textit{xeliherb} which is important for the space colonists' survival. 
+In the critical condition, the Science Team presents an association statement of the form (\ref{bsp:association}),  where \textit{ralocrop} is another plant.
 %
 \begin{exe}
     \ex \label{bsp:association} A high yield of \textit{xeliherb} is associated with the presence of \textit{ralocrop}.
 \end{exe}
 %
-Based on this information, participants chose to cultivate \textit{both} plants or \textit{only} \textit{xeliherb}.
-The experiment manipulated (between-subjects) the information in the Science Team's report, ranging from explicitly denied causation, through correlational association (as in (\ref{bsp:association})), to explicit intervention-based causal descriptions.
-Since cultivation of \textit{ralocrop} may be costly, choosing \textit{both} is rational only to the extent that the decision-maker believes in a causal effect on the yield of \textit{xeliherb}.
-Evidence for \textit{causal belief} after the association statement comes from the observation that the rate of \textit{both}-choices following (\ref{bsp:association}) was higher than after explicit denial of a causal relationship, and indistinguishable from the interventionist condition.
+Based on the received information, participants then had to choose from two options, namely to cultivate \textit{both} plants, or to \textit{only} cultivate \textit{xerliherb}. 
+The experiment manipulated (between-subjects) the kind of information given in the Science Team's report, ranging from explicitly denied causation, through correlational association (as in (\ref{bsp:association})), to explicit intervention-based causal descriptions. 
+Since cultivation of \textit{ralocrop} may be costly, a choice to cultivate \textit{both} plants is rational only to the extent that the decision-maker beliefs in a causal effect on the yield of \textit{xeliherb}. 
+Evidence for a certain degree of \textit{causal belief} after the association statements comes from the observation that the proportion of choices of option \textit{both} after receiving (\ref{bsp:association}) was higher than after hearing a statement that explicitly denied a causal relationship, and indistinguishable from a statement that used interventionist language to communicate a strong sense of causal relation. 
 
-The present paper builds on the \textit{xeliherb}-paradigm by addressing two shortcomings of that study and testing more nuanced predictions of the pragmatic account.
+While this study provides some evidence for the pragmatic inference view, this paper builds on the \textit{xeliherb}-paradigm by addressing two potential shortcomings and addressing more nuanced predictions of the pragmatic account.
 %
-First, previous work has not shown that the imputed causal belief from correlational language affects anything beyond the immediate forced-choice decision.
-Experiment~1 therefore examines how causal interpretations of correlational statements influence subsequent decisions, such as recalling the Science Team's report or advising future decision-makers.
+First, the previous work has not yet shown conclusively that the imputed causal belief from correlational language also strongly affected anything beside the concrete forced-choice decision. 
+For that reason, Experiment 1 reported in this paper examines how causal interpretations of correlational statements influence other subsequent decision, such as to repeat what the Science Team actually reported, or to give advice to other future decision makers. 
 %
-Second, the between-subjects forced-choice design provides only a coarse signal of the belief change triggered by correlational statements.
-Experiment~2 therefore directly measures belief updating within individuals and tests how the pragmatic factors identified above modulate causal enrichment.
-Across these experiments, we find that correlational statements can strengthen causal beliefs in decision-relevant contexts, that these beliefs are reflected in participants' memory reports and action-guiding communication, and that their impact depends systematically on pragmatic features of the communicative context.
-Crucially, we identify not only the conditions under which causal interpretations are strengthened, but also those under which they are attenuated—patterns that provide converging support for a pragmatic account of causal implicature grounded in reasoning about speakers' communicative intentions and goals.
+Second, the between-subjects forced-choice design does not provide a strong signal of the belief change triggered by correlation statements.
+%
+Moreover, the pragmatic account predicts that the degree of causal belief should be influenced systematically by contextual factors, such as the speaker's goal and whether the message was directed at the listener or merely overheard.
+Experiment 2 therefore directly measures belief updating within individuals and tests how pragmatic features of the communicative context modulate causal enrichment. 
+Across these experiments, we find that correlational statements can strengthen causal beliefs in decision-relevant contexts, that these beliefs are reflected in participants’ memory reports and action-guiding communication, and that their impact depends systematically on pragmatic features of the communicative context. 
+Crucially, we identify not only the conditions under which causal interpretations are strengthened, but also those under which they are attenuated—patterns that provide converging support for a pragmatic account of causal implicature grounded in reasoning about speakers’ communicative intentions and goals.
 
 
 \begin{comment}
@@ -259,8 +256,10 @@ Exp.1 suggests that statements of association can influence practical decision m
 \section{Experiment 1}
 
 %Experiment~1 is designed to examine how participants’ \emph{own interpretations} of correlational statements extend beyond their immediate decision responses, both in a recall task and in a downstream advice task (see Figure~\ref{fig:overview}C). 
-In the \textit{xeliherb}-paradigm, choosing to cultivate \emph{both} plants is consistent with a causal interpretation of the correlational information (see Figure~\ref{fig:overview}B).
-Experiment~1 elicits participants’ interpretations through free production after they underwent the same binary decision task as in prior work by \citet{lassiter2024rationality}.
+In the \textit{xeliherb}-paradigm, choosing to cultivate \emph{both} plants is consistent with a causal interpretation of the correlational information (see Figure~\ref{fig:overview}B). 
+However, such choice behavior provides only indirect evidence and does not reveal how participants construe the relationship expressed by the correlational statement once the immediate decision is made. 
+In particular, it remains unclear whether acting on the putative cause reflects a transient response strategy tied to the task, or a more stable interpretation that participants are willing to reconstruct and communicate to others.
+To address this gap, Experiment~1 elicits participants’ interpretations through free production after they underwent the same binary decision task as in prior work by \citet{lassiter2024rationality}.
 Experiment~1a focused on recall of the previously encountered information, targeting how participants reconstruct the message they understood themselves to have received. 
 Experiment~1b required participants to reproduce the information as advice, thereby engaging communicative use under action-oriented goals. By comparing production patterns across these tasks, Experiment~1 examines whether participants who choose to intervene are also more likely to recall correlational statements using explicit causal language. % explicitly causal terms when articulating their own interpretation.
 
@@ -271,14 +270,17 @@ Experiment~1b required participants to reproduce the information as advice, ther
 We recruited a total of 99 participants via Prolific. All participants were native English speakers, had completed at least 10 previous studies, and had an approval rate of at least 90\%; participants who had taken part in earlier pilot studies were excluded. Of these, $N = 49$ participated in Experiment~1a and $N = 50$ participated in Experiment~1b. Participants completed a single-trial experiment lasting approximately 5 minutes and were compensated \pounds0.90. This and all subsequent experiments offered above-average compensation according to the platform.
 
 \subsubsection{Procedure}
-The procedure followed the general paradigm illustrated in Figure~\ref{fig:overview}A--C.
+The procudeure followed the general paradigm illustrated in Figure~\ref{fig:overview}A-C.
 Participants first read the background story, followed by the critical correlational information. They then completed a binary forced-choice decision task in which they chose whether to cultivate \emph{only} \textit{xeliherb} (the effect) or \emph{both} \textit{xeliherb} and \textit{ralocrop} (the effect and the putative cause). Participants were additionally asked to provide a brief justification for their choice.
 
 Following the decision task, participants completed the free-production task. In Experiment~1a, participants were asked to recall and pass on the information they had just read. In Experiment~1b, participants were asked to reproduce the information in the form of advice intended for another agent facing a similar decision. In both sub-experiments, the produced message was framed as being passed on to a subsequent recipient within the same fictional scenario.
 
 \subsubsection{Materials}
 
-After the decision task, participants produced a free-text message based on the information they had received. The wording of the prompt differed only with respect to the communicative goal. In Experiment~1a (recall), participants were instructed: %\mf{insert full instructions / scenarios for recall and message passing} \hw{done!}
+Participants were first presented with the original \textit{xeliherb}-paradism (Experiment~2 from \citet{lassiter2024rationality}: see Figure~\ref{fig:overview}A). 
+They received a report from a science team in the form of the correlational statement in (\ref{bsp:association}).
+They decided between the options \textit{only xeliherb} and \textit{both}, where the latter indicates a sufficiently high degree of belief in causality, as described above. 
+After completing the decision task, participants were prompted to produce a free-text message based on the information they had received. The wording of the prompt differed only with respect to the communicative goal. In Experiment~1a (recall), participants were instructed: %\mf{insert full instructions / scenarios for recall and message passing} \hw{done!}
 %
 \begin{quote}
 \small
@@ -292,7 +294,9 @@ In Experiment~1b (advice), participants were instructed:
 \emph{There is also an outpost of your colonists on Xelifan-3. Unfortunately, due to atmospheric conditions, you can only send one message to the people in this outpost before all contact breaks off for potentially a long time. Tell the people in the outpost all they need to know about xeliherb and ralocrop, what they are good for, and how they might be related, so that they can decide what to cultivate for themselves!}
 \end{quote}
 %
-We expect that participants who interpret the correlational statement causally---as indexed by their decision to intervene---will more often reproduce the information in causal terms in both tasks.
+Importantly, the recall task was not framed as reproducing the exact wording of the original message, but as reporting on the key information that had been communicated.
+Under this interpretation of the task, reproducing the correlational statement in causal terms provides evidence that participants understood or construed the original message causally, rather than merely misremembering its surface form.
+We therefore expect that participants who adopt a causal interpretation of the correlational statement—as indexed by their decision to intervene—will more often reproduce the information in explicitly causal terms in the recall task, and will more often convey causality-implying information in the advice task.
 
 
 
@@ -353,7 +357,7 @@ Figure~\ref{fig:results_exp1} summarizes the results from the free-production re
 
 \begin{enumerate}
 \item \textbf{None}: ``Ralocrop needs a lot of water, so I would just focus on xeliherb for now.''     
-\item \textbf{Neutral}: ``If ralocrop grows, then xeliherb grows too.''
+\item \textbf{Neutral}:`` If ralocrop grows, then xeliherb grows too.''
 \item \textbf{Causation}: ``Xeliherb needs ralocrop in order to grow.''
 \end{enumerate}
 
@@ -361,7 +365,7 @@ For hypothesis testing, responses coded as \textit{causation} were assigned a va
 
 In Experiment~1a, the majority of recall responses were classified as \textit{neutral} irrespective of participants’ initial choice. However, participants who initially chose \emph{both} \textit{xeliherb} \textit{and} \textit{ralocrop} produced a higher proportion of \textit{causation} responses than participants who chose \emph{only} \textit{xeliherb} ($\mu = 1.68$, CrI $[0.36, 3.08]$, posterior probability $= .98$).
 
-In Experiment~1b, responses showed a clearer differentiation between choice groups. Participants who selected \emph{only} \textit{xeliherb} in the first decision-making task predominantly produced \textit{neutral} responses. By contrast, participants who initially chose \emph{both} most frequently produced \textit{causation} responses, with a credibly higher rate than in the \emph{only} group ($\mu = 2.37$, CrI $[1.07, 3.79]$, posterior probability $= .99$).
+In Experiment~1b, responses showed a clearer differentiation between choice groups. Participants who selected \emph{only} \textit{xeliherb} in the first decision-making task predominantly produced \textit{neutral} responses. By contrast, participants  who initially chose \emph{both} most frequently produced \textit{causation} responses, with a credibly higher rate than in the \emph{only} group ($\mu = 2.37$, CrI $[1.07, 3.79]$, posterior probability $= .99$).
 
 \subsubsection{Discussion}
 
@@ -388,7 +392,7 @@ Experiment~2 employed a between-participants factorial design with two manipulat
 
 \subsubsection{Participants}
 
-We recruited a total of 404 participants via Prolific using the same eligibility criteria as in the previous experiment. Each participant completed a one-shot trial for a single instance of randomly assigned between-subject conditions.
+We recruited a total of 404 participants via Prolific using the same eligibility criteria as in the previous experiment. Each participant completed a one-shot trial for a single instance of randomly assigned between-subject conditions. All participants were native English speakers.
 
 \subsubsection{Materials}
 
@@ -403,7 +407,7 @@ The \textsc{speaker goal orientation} was introduced through the following descr
 \begin{quote}
     \small
     \textbf{Diagnostic-oriented (Localization):}  
-    In the early days\footnote{The phrase “early days” refers to an earlier phase of the colonization effort, during which the emphasis was on discovering naturally occurring \textit{xeliherb}. In contrast, the present-day context involves intentional cultivation, motivating the role of intervention-oriented science teams. This temporal contrast provides narrative grounding for the speaker goal manipulation without presenting the two teams as opposing or incompatible.} of deep space colonization, humans have relied on finding naturally growing \textit{xeliherb}. Dedicated Science Teams for Localization accumulated evidence for where to locate the precious, but fragile and hard-to-discover plant.
+    In the early days \footnote{The phrase “early days” refers to an earlier phase of the colonization effort, during which the emphasis was on discovering naturally occurring \textit{xeliherb}. In contrast, the present-day context involves intentional cultivation, motivating the role of intervention-oriented science teams. This temporal contrast provides narrative grounding for the speaker goal manipulation without presenting the two teams as opposing or incompatible.} of deep space colonization, humans have relied on finding naturally growing \textit{xeliherb}. Dedicated Science Teams for Localization accumulated evidence for where to locate the precious, but fragile and hard-to-discover plant.
 \end{quote}
 
 \begin{quote}
@@ -460,9 +464,10 @@ The primary dependent measure was the change between posterior and prior judgmen
 
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\linewidth]{figures-exp3/results_exp_3_individuals.png}
+    \includegraphics[width=\linewidth]{figures-exp3/results_exp_3.png}
     \caption{
-Experiment~2 results. \textbf{(A)} Per-cell distribution of individual change scores (posterior minus prior causal-confidence rating): half-violin densities with jittered individual points; white-filled pointranges indicate medians and inter-quartile ranges. The dashed grey line marks zero change. The y-axis is clipped to the central 99\% of the data. \textbf{(B)} Zoomed view of condition means with bootstrapped 95\% confidence intervals.
+Mean change in causal confidence (posterior minus prior ratings) aggregated over raw participant responses and across conditions. Points represent condition means; error bars indicate bootstrapped 95\% confidence intervals.
+%\mf{I removed the "sliders from 0 to 100" part for compactness; can we please redo this plot once more with y-axis labels for the unit interval (all number / 100), please?}
 }
     \label{fig:exp2_result}
 \end{figure}
@@ -471,24 +476,27 @@ Experiment~2 results. \textbf{(A)} Per-cell distribution of individual change sc
 
 
 
-Figure~\ref{fig:exp2_result} summarizes the results. Data were analyzed using Bayesian hierarchical regression within the same general modeling framework as Experiment~1; difference scores were positive on average across all conditions, indicating that the correlational information made participants more likely to endorse an action that is rational under a belief in causation.
+Figure~\ref{fig:exp2_result} summarizes the results of Experiment~2. Data were analyzed using Bayesian hierarchical regression within the same general modeling framework as Experiment~1. 
+The plot suggests that, for all conditions, difference scores (between posterior and prior judgments) are positive on average, indicating that the received correlational information made participants endorse an action which is rational for a belief in causation more.
+The plot also suggests a possible main effect of factor \textsc{information source}, no main effect of \textsc{speaker goal orientation}, but possibly a credible interaction between these factors.
 
-Slider responses were mapped on the unit interval and modeled with a zero--one--inflated Beta likelihood, capturing graded belief in the Beta component while treating exact boundary responses (0 and 1) as categorical commitments. We modeled responses as a function of \textsc{decision order} (prior vs.\ posterior), \textsc{directness of information}, \textsc{speaker goal orientation}, and their interaction, with by-participant random intercepts and random slopes for \textsc{decision order}; the prior judgment thus served as an individually measured baseline.  
+Because participants provided two judgments using a continuous slider and showed substantial heterogeneity in how they used the scale, we modeled responses as a function of \textsc{decision order} (prior vs.\ posterior judgment), \textsc{information source}, \textsc{speaker goal orientation}, and their interaction. By design, the experimental factors affected only the posterior judgment, while the prior judgment served as an individually measured baseline. The model also included by-participant random intercepts and random slopes for \textsc{decision order}, allowing baseline beliefs and belief updating to vary across individuals. To account for the bounded and non-Gaussian nature of the slider responses, slider judgments were mapped on the unit interval and modeled using a zero--one--inflated Beta likelihood. This approach allows graded belief states to be captured by the Beta component while treating exact boundary responses (0 and 1) as categorical commitments.  
+
+The model revealed substantial individual differences in both baseline beliefs and belief updating, with participants varying widely despite identical initial conditions. The response distribution showed a clear distinction between graded belief updates and categorical commitments, with most extreme responses leaning toward the upper bound—indicating full commitment to a causal interpretation.
 
 % \paragraph{Random effects and distributional components.}
 % The hierarchical model revealed substantial individual differences in both baseline beliefs and belief updating. Participant-level intercepts showed large variability ($\sigma = 0.97$, 95\% CrI $[0.81, 1.13]$), indicating heterogeneous baseline beliefs at the first decision point despite identical slider initialization, and random slopes for decision time were also substantial ($\sigma = 0.48$, 95\% CrI $[0.25, 0.77]$), reflecting meaningful heterogeneity in belief updating. Intercepts and slopes were strongly negatively correlated ($\rho = -0.82$, 95\% CrI $[-0.99, -0.63]$), such that participants with higher initial beliefs tended to update less, consistent with ceiling effects or regression to the mean. At the distributional level, the zero--one--inflated Beta likelihood distinguished graded belief from categorical commitment: graded responses were moderately concentrated ($\phi = 7.26$, 95\% CrI $[5.76, 9.71]$), approximately 9\% of responses were exact boundary values ($\textit{zoi} = 0.09$, 95\% CrI $[0.07, 0.11]$), and boundary responses were overwhelmingly driven to the full causal commitment rather than rejection ($\textit{coi} = 0.97$, 95\% CrI $[0.92, 1.00]$).
 
-Belief increased substantially from the prior to the posterior judgment ($\beta = 0.31$, 95\% CrI $[0.28, 0.34]$), confirming systematic updating in response to the correlational information. Effects below are reported as posterior expected predictions on the 0--100 slider scale.
+Fixed effects were estimated on the logit scale, but we report results in terms of posterior expected predictions on the response scale for interpretability (mapped to the 0–1 range corresponding to the 0–100 slider). %The intercept was estimated at $0.44$ (95\% CrI $[0.41, 0.47]$), corresponding to the expected graded belief at the prior decision point in the reference condition (indirect information, intervention-oriented speaker).
+There was a strong positive effect of decision order ($\beta = 0.31$, 95\% CrI $[0.28, 0.34]$), indicating a substantial increase in belief from the prior to the posterior judgment, consistent with systematic belief updating following exposure to the correlational information.
 
 Crucially, the analysis revealed a credible interaction between \textsc{directness of information} and \textsc{speaker goal orientation} ($\Delta = 0.07$, 95\% CrI $[0.00, 0.13]$, posterior probability $P(\Delta > 0) = .97$, evidence ratio = 36.38). Decomposing this interaction revealed a systematic difference in directional tendencies across levels of \textsc{directness of information}. Under direct communication, posterior beliefs tended to be higher for diagnostic-oriented than for intervention-oriented speakers ($\mu = 0.03$, 95\% CrI $[0.01, 0.08]$, $P(\mu > 0) = .94$), indicating marginal evidence for this contrast. Under indirect communication, the pattern was reversed, with posterior beliefs tending to be higher for intervention-oriented than for diagnostic-oriented speakers ($\mu = -0.02$, 95\% CrI $[-0.07, 0.02]$), with moderate evidence in this direction ($P(\mu < 0) = .88$).
 
 In addition, there was strong evidence for a main effect of \textsc{directness of information}, with higher posterior beliefs under direct than indirect communication ($\mu = 0.06$, 95\% CrI $[0.02, 0.09]$, $P(\mu > 0) > .99$). No credible main effect of \textsc{speaker goal orientation} was observed in isolation.
 
-The model revealed substantial individual differences in both baseline beliefs and belief updating, with participants varying widely despite identical initial conditions. The per-cell distributions in Figure~\ref{fig:exp2_result}A nevertheless show that these effects are not driven by atypical participants: 89--91\% of participants in every cell updated in the positive direction (7--9\% negative, 2--3\% zero). The crossover is also visible at the raw distributional level: under \textit{direct} communication the diagnostic-oriented cell's median sits 6.5 points above the intervention-oriented cell's, with the 75th percentile 10 points above---a shift of the whole upper half of the distribution. Under \textit{indirect} framing the medians are identical (30 points in both cells) and only the upper tail differs slightly.
-
 \subsubsection{Discussion}
 
-Experiment~2 provides direct evidence that correlational statements can increase participants’ willingness to intervene, indicating a genuine shift in belief in causality. Crucially, while a generic increase in belief in \textit{some} causal relation is explained by assuming that participants (implicitly) applied Reichenbach's principle of \textit{no correlation without causation}, the data suggest that participants' causal beliefs changed towards a more specific causal interpretation (that \textit{ralocrop} cultivation influences the yield of \textit{xeliherb}).
+Experiment~2 provides direct evidence that correlational statements can increase participants’ willingness to intervene, indicating a genuine shift in belief in causality. Crucially, while a generic increase in belief in \textit{some} causal relation is explained by assuming that participants (implicitly) applied Reichenbach's principle of \textit{no correlation without causation}, the data suggest that participant's causal belief changed towards a more specific causal interpretation (that \textit{ralocrop} cultivation influences yield of \textit{xeliherb)}.
 Moreover, the experiment suggests that changes in causal beliefs were systematically modulated by pragmatic features of the communicative context. 
 In particular, belief updates were larger under direct communication—when information was explicitly addressed to the participant—than under indirect exposure. This main effect suggests that listeners are sensitive to audience design and to the inferential pressures associated with communicative intent.
 
@@ -496,11 +504,11 @@ When correlational information is presented as having been formulated to support
 As a result, listeners may enrich correlational statements with causal meaning in order to render them useful for action. By contrast, when the same information is encountered as impersonal or self-directed—such as a report or note not tailored to a specific decision problem—the pragmatic pressure to infer causal structure is weaker. In these cases, correlational statements can be interpreted as merely descriptive, and belief updating is correspondingly reduced.
 
 Beyond this main effect, the interaction between communicative directness and speaker goal orientation further supports the pragmatic enrichment view by revealing not only when causal belief updating is strengthened, but also when it is attenuated.
-Under direct communication, correlational statements attributed to diagnostic-oriented speakers elicited larger belief updates than those attributed to intervention-oriented speakers. This asymmetry is consistent with pragmatic reasoning over alternative utterances. When a speaker whose role already presupposes intervention nevertheless opts for a weak correlational formulation, listeners may reason more cautiously: had the speaker been confident in a causal relationship, a stronger or more directive formulation would have been communicatively preferable. This inference may block causal enrichment and attenuate belief updating.
+Under direct communication, correlational statements attributed to diagnostic-oriented speakers elicited larger belief updates than those attributed to intervention-oriented speakers. This asymmetry is consistent with pragmatic reasoning over alternative utterances. When a speaker whose role already presupposes intervention nevertheless opts for a weak correlational formulation, listeners may reason more cautiously: had the speaker been confident in a causal relationship, a stronger or more directive formulation would have been communicatively preferable. This inference may block causal enrichment and attenuates belief updating.
 
 By contrast, when a diagnostic-oriented speaker—whose own task does not presuppose intervention—directly communicates correlational information to a listener who is known to care about acting, the choice to mention a manipulable factor can be interpreted as intentional and action-relevant. Despite the lack of goal alignment, listeners may reason that the speaker selected this information precisely because it bears on the listener’s decision problem. Under this interpretation, the correlational formulation invites pragmatic enrichment: it is treated as conveying information about a causally actionable relationship, even without explicit causal language.
 
-In indirect contexts, where the same information is encountered as impersonal evidence rather than as communicative input, opportunities for pragmatic reasoning are substantially reduced. In the absence of clear audience design, listeners have less reason to consider alternative utterances or to infer speaker intentions, and belief updating correspondingly becomes less sensitive to speaker goal orientation. Nevertheless, we observe moderate evidence for a small tendency in the opposite direction: when the information originates from an intervention-oriented context, belief updating is slightly higher, possibly reflecting alignment between the inferred function of the information and the listener’s own decision goals.
+In indirect contexts, where the same information is encountered as impersonal evidence rather than as communicative input, opportunities for pragmatic reasoning are substantially reduced. In the absence of clear audience design, listeners have less reason to consider alternative utterances or to infer speaker intentions, and belief updating correspondingly becomes less sensitive to speaker goal orientation. Nevertheless, we observe moderate evidence for a small tendency in the opposite direction: when the information originates from an intervention-oriented context, belief updating is slightly higher, maybe reflecting alignment between the inferred function of the information and the listener’s own decision goals.
 
 \begin{comment}
     
@@ -517,7 +525,8 @@ Taken together, these findings support a pragmatic account of causal interpretat
 \end{comment}
 \section{Conclusion}
 
-The present study revisits a tension in causal reasoning: although correlational statements are semantically compatible with multiple causal structures, listeners often enrich them to carry more specific causal information. Across two experiments, we show that the same correlational statement produces systematically different degrees of causal commitment depending on its communicative context---belief updates were stronger under direct than under indirect communication (Experiment~2), participants reformulated such statements as causal more often when advising others than when recalling them for themselves (Experiment~1), and the speaker-goal contrast reversed sign as directness was reduced (Experiment~2). This constellation is difficult to capture with a context-insensitive bias or heuristic over the surface form of correlational statements, which would have to postulate distinct biases for distinct framings, but follows naturally from a pragmatic account in which causal implicatures arise through reasoning about why a particular speaker, in a particular communicative setting, chose a correlational formulation rather than a more directly causal alternative.
+The present study revisits a tension in causal reasoning: although correlational statements are semantically compatible with multiple causal structures, listeners often enrich these statements to carry more specific causal information. Across two experiments, we show that correlational language can strengthen causal beliefs in decision-making contexts, that such beliefs are reflected in both own interpretations and action-guiding communication, and that pragmatic properties of the communicative context systematically modulate when causal enrichment is strengthened or attenuated. 
+These findings are difficult to capture with accounts that relate causal enrichments to a simple bias or heuristic, but follow naturally from a pragmatic account in which causal implicatures arise through reasoning about the communicative context.
 
 %Experiment~1 provides evidence that causal interpretations of correlational statements are reflected not only in participants’ immediate judgments, but also in their internalized interpretations and in how they communicate information to others. Across both recall and advice tasks, participants who chose to act on the putative cause were more likely to reproduce the correlational statement using explicitly causal language than participants who did not intervene. This pattern was especially pronounced in the advice task, where participants were required to tailor information for another agent. In this sense, Experiment~1 illustrates a mechanism by which causal enrichment from correlational language can be externalized and propagated through communication.
 
@@ -529,7 +538,7 @@ The finding that speakers are more likely to use causal language when advising o
 
 %Taken together, the two experiments provide converging evidence for a pragmatic account of causal implicature. Experiment~1 shows how causal interpretations are represented and communicated, while Experiment~2 demonstrates how those interpretations translate into graded belief updating under varying pragmatic factors. The combined results suggest that listeners enrich correlational language with causal meaning by reasoning about why a speaker chose a particular formulation given their goals and the communicative setting, rather than by mechanically over-attributing causation.
 
-Several limitations remain. First, while the current paradigm captures decision-making behavior in response to correlational information, it does not fully disentangle causal belief from utility-based reasoning. Future work could address this by separately modeling inferred causal structure and subjective cost–benefit considerations. Second, our experiments focused primarily on pragmatic cues related to speaker goals and communicative framing; exploring how inferences are shaped by the listener’s own goals and relevance constraints would offer a valuable extension. Finally, formalizing the observed effects within probabilistic pragmatic frameworks \citep{goodman2016pragmatic,ScontrasTessler2021:A-practical-int,Degen2023:The-Rational-Sp}, in particular extending previous like-minded models of causal enrichment of conditionals \citep{grusdt_probabilistic_2022}, could yield more precise, model-based predictions about when and how causal enrichment arises from correlational language.
+Several limitations remain. First, while the current paradigm captures decision-making behavior in response to correlational information, it does not fully disentangle causal belief from utility-based reasoning. Future work could address this by separately modeling inferred causal structure and subjective cost–benefit considerations. Second, our experiments focused primarily on pragmatic cues related to speaker goals and communicative framing; exploring how inferences are shaped by the listener’s own goals and relevance constraints would offer a valuable extension. Finally, formalizing the observed effects within probabilistic pragmatic frameworks \citep{goodman2016pragmatic,ScontrasTessler2021:A-practical-int,Degen2023:The-Rational-Sp}, in particular extending previous like-minded models of causal enrichments of conditionals \citep{grusdt_probabilistic_2022}, could yield more precise, model-based predictions about when and how causal enrichment arises from correlational language.
 
 
 % \section{Acknowledgments}
