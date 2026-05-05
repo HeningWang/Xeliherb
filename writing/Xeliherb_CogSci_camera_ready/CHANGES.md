@@ -81,8 +81,6 @@ Two compression cuts in Experiment 1, no substantive content lost.
 - §Experiment 1 opening paragraph: cut the two-sentence motivation ("However, such choice behavior provides only indirect evidence... In particular, it remains unclear...") since the same point already lives in the Introduction's contributions paragraph.
 - §Experiment 1 Materials: cut the three opening sentences that re-described the *xeliherb*-paradigm and the binary decision (already covered in §Procedure). Also collapsed the three-sentence interpretation rationale before the Results section ("Importantly, the recall task was not framed as reproducing the exact wording... Under this interpretation... We therefore expect...") into a single sentence stating the expectation.
 
-About 200 words saved.
-
 ## 2026-04-27 — HW (Experiment 2 Results revision and cuts)
 
 Restructured §Experiment 2 Results.
@@ -91,8 +89,6 @@ Restructured §Experiment 2 Results.
 - Compressed the model-description paragraph: reordered so the unusual modelling choice (ZOIB likelihood) leads, removed the "Because participants showed substantial heterogeneity…" preface and the standalone restatement of the prior-as-baseline design.
 - Tightened the decision-order paragraph: reduced the "Fixed effects were estimated on the logit scale, but…" methodological aside to a single trailing sentence ("Effects below are reported as posterior expected predictions on the 0–100 slider scale."); finding now leads.
 - Moved the standalone "individual differences" paragraph from between the model description and the fixed-effects results to immediately before the per-cell distributions paragraph, so the two form one block on individual-level patterns. The combined block now directly answers R1's question about whether the asymmetry could be due to large individual differences.
-
-About 200 words saved.
 
 ## 2026-04-27 — HW (Editor pass)
 
@@ -104,7 +100,5 @@ One copy-edit pass across the body. Substantive fixes:
 - §Exp 2 Discussion: misplaced parenthesis and missing article in "influences yield of *xeliherb)*." → "influences the yield of *xeliherb*)."; possessive agreement in the same sentence (`participant's causal belief` → `participants' causal beliefs`); `attenuates` → `attenuate`; `maybe` → `possibly`.
 - Conclusion: removed a contradictory phrase introduced in an earlier merge ("under direct communication the speaker-goal contrast reversed sign as directness was reduced" — the two clauses said opposite things); `enrichments` → `enrichment` in the closing reference clause.
 - Hyphen → en-dash in numeric ranges (`0–1`, `0–100`, `A--C`); a stray space before `\footnote`; a doubled space; a missing space after a colon; a trailing space in the title; a comma before "and they should be clearly separated" in the Introduction; `paradism` → `paradigm`.
-
-Left alone: plant-name italicisation inside participant-shown verbatim instructions (already wrapped in `\emph`); `\emph` vs `\textit` for choice labels (mixed throughout the paper); curly vs. straight apostrophes (renders identically).
 
 Addresses R3 (typo "procudeure").
