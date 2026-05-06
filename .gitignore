@@ -24,6 +24,7 @@
 
 # LaTeX compiled outputs (keep source, not PDF)
 writing/**/*.pdf
+!writing/Xeliherb_CogSci_camera_ready/main.pdf
 
 # latexdiff generated artifacts (regenerable from main_submitted.tex and main.tex)
 writing/**/main_diff.*
