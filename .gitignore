@@ -31,3 +31,6 @@ writing/**/main_diff.*
 
 # Claude Code local config
 .claude/
+
+# Local presentation speaker notes
+writing/flash_talk/xeliherb_flash_talk_script.md
