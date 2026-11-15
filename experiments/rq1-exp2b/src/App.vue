@@ -27,7 +27,8 @@
           information and that you agree to take part.
         </p>
         <p>The study takes about four minutes.</p>
-        <button @click="$magpie.nextScreen()">I agree, start the study</button>
+        <button @click="save({})">I agree, start the study</button>
+        <Record :data="{ screen: 'welcome', list: list.condition, design_version: DESIGN_VERSION }" />
       </Screen>
 
       <!-- Screen 2. Cover story of Experiment 1, with one sentence that introduces the plants of items B–D -->
@@ -42,7 +43,8 @@
           vennagrass, quellbean and brindlevine.
         </p>
         <CoverPicture />
-        <button @click="$magpie.nextScreen()">Continue</button>
+        <button @click="save({})">Continue</button>
+        <Record :data="{ screen: 'cover', list: list.condition, design_version: DESIGN_VERSION }" />
       </Screen>
 
       <!-- Screens 3–14. One sentence per screen, in the order drawn for this participant -->
@@ -54,7 +56,7 @@
           <button v-if="ratings[s.item] !== null" @click="save({ rating: ratings[s.item] })">Continue</button>
           <Record :data="{ screen: 'sentence', list: list.condition, position: k + 1, item: s.item, type: s.type,
                            text: s.text, previous_type: k > 0 ? sentences[k - 1].type : null,
-                           first_critical: s.item === firstCritical }" />
+                           first_critical: s.item === firstCritical, design_version: DESIGN_VERSION }" />
         </Slide>
       </Screen>
 
@@ -104,6 +106,7 @@ import Rating from './components/Rating.vue';
 // A list assigns the association or the causal version to each of the four critical items (Latin square).
 const requested = new URL(window.location).searchParams.get('condition');
 const list = lists.find((l) => l.condition === requested) || null;
+const DESIGN_VERSION = 'v1'; // change whenever the materials change
 
 // The twelve sentences of this list: four critical items in their assigned version, and the eight fillers.
 function listSentences(l) {
@@ -135,6 +138,7 @@ export default {
     const sentences = list ? drawOrder(listSentences(list)) : [];
     return {
       list,
+      DESIGN_VERSION,
       sentences,
       ratings: Object.fromEntries(sentences.map((s) => [s.item, null]))
     };

@@ -31,7 +31,7 @@ Pushing to `main` deploys to GitHub Pages.
 
 ## Data
 
-Twelve rows per participant (`screen = sentence`): `list`, `position` (1–12), `item` (A–D or the filler id),
+One row each for the welcome and cover screens, then twelve rows (`screen = sentence`): `list`, `design_version`, `position` (1–12), `item` (A–D or the filler id),
 `type` (association, causal, contradiction or cancellation), `text`, `previous_type` (type of the sentence
 before it, empty at position 1), `first_critical` (true for the first
 critical item the participant saw) and `rating` (0–100).

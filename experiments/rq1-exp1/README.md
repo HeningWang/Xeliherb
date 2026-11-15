@@ -11,11 +11,12 @@ and rate belief in G, the alternatives R, H and N, the perceived strength C and 
 Each group runs as its own Prolific study, and the study link names the group:
 
 ```
-https://heningwang.github.io/Xeliherb/experiments/rq1-exp1/?condition=fields&PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
+https://heningwang.github.io/Xeliherb/experiments/rq1-exp1/?condition=fields&batch=1&PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
 ```
 
-with `condition=fields`, `note`, `1a` or `1b`. Each batch adds 20 places to all four studies at the same time,
-so the groups stay equal. Give the four studies the same title, description, payment and time estimate,
+with `condition=fields`, `note`, `1a` or `1b`, and `batch` the batch number. Each batch publishes four new studies,
+one per group with 20 places each, at the same time, so the groups stay equal and every row records its batch;
+exclude participants of all earlier studies in each new one. Give the four studies the same title, description, payment and time estimate,
 enter the same completion code in each, and exclude participants of the other three studies in each.
 A link without a valid condition shows a "cannot start" page.
 
@@ -40,7 +41,8 @@ and open http://localhost:8096/?condition=fields. In debug mode the data appear 
 
 ## Data
 
-One row per response screen (`screen` = evidence, alternatives, strength, decision), each with `condition`
-and magpie's `responseTime`. Evidence: `G`, and in the fields group `harvest_order` (patch numbers in
-`trials/patches.csv`, in the order of gathering) and `reveal_ms` (time of each click since the screen opened).
+One row per screen (`screen` = welcome, cover, evidence, alternatives, strength, decision), each with `condition`,
+`batch`, `design_version` and magpie's `responseTime` (the time spent on the screen). Evidence: `G`, and in the fields group `harvest_order` (patch numbers in
+`trials/patches.csv`, in the order of gathering) and `reveal_ms` (time of each click since the screen opened) and `gather_ms`
+(time from the first to the last click).
 Alternatives: `R`, `H`, `N` and `alternatives_order`. Strength: `C`. Decision: `D`. All ratings 0–100.

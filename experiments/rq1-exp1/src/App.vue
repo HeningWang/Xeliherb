@@ -25,7 +25,8 @@
           information and that you agree to take part.
         </p>
         <p>The study takes about three minutes.</p>
-        <button @click="$magpie.nextScreen()">I agree, start the study</button>
+        <button @click="save({})">I agree, start the study</button>
+        <Record :data="trialInfo('welcome')" />
       </Screen>
 
       <!-- Screen 2. Cover story -->
@@ -39,7 +40,8 @@
           the patches.
         </p>
         <CoverPicture />
-        <button @click="$magpie.nextScreen()">Continue</button>
+        <button @click="save({})">Continue</button>
+        <Record :data="trialInfo('cover')" />
       </Screen>
 
       <!-- Screen 3. The evidence, and belief in G (main measure) -->
@@ -50,7 +52,7 @@
           <template v-else>
             <Rating v-model="answers.G" question="How likely is it that ralocrop makes xeliherb grow better?" />
             <button v-if="answers.G !== null" @click="save({ G: answers.G, harvest_order: harvestOrderText,
-                                                             reveal_ms: revealMs.join('|') || null })">Continue</button>
+                                                             reveal_ms: revealMs.join('|') || null, gather_ms: gatherMs })">Continue</button>
           </template>
           <Record :data="trialInfo('evidence')" />
         </Slide>
@@ -142,7 +144,11 @@ import Evidence from './components/Evidence.vue';
 import Rating from './components/Rating.vue';
 
 // Each group runs as its own Prolific study whose link names the group: ?condition=fields|note|1a|1b.
-const requested = new URL(window.location).searchParams.get('condition');
+// Each batch publishes new studies whose links add &batch=N, so that the batch is recorded with every row.
+const params = new URL(window.location).searchParams;
+const requested = params.get('condition');
+const BATCH = params.get('batch');
+const DESIGN_VERSION = 'v1'; // change whenever the materials change
 
 const ALTERNATIVES = [
   { id: 'R', text: 'Xeliherb makes ralocrop grow better, but ralocrop does not affect xeliherb.' },
@@ -171,6 +177,9 @@ export default {
     harvestOrderText() { // the order of gathering, which only the fields group sees
       return this.condition.evidence === 'fields' ? this.harvestOrder.map((p) => p.patch).join('|') : null;
     },
+    gatherMs() { // time from the first to the last gathering click, fields group only
+      return this.revealMs.length ? this.revealMs[this.revealMs.length - 1] - this.revealMs[0] : null;
+    },
     alternativesOrderText() {
       return this.alternatives.map((a) => a.id).join('|');
     }
@@ -181,7 +190,7 @@ export default {
       this.shown += 1;
     },
     trialInfo(screen) {
-      return { screen, condition: this.condition.condition };
+      return { screen, condition: this.condition.condition, batch: BATCH, design_version: DESIGN_VERSION };
     },
     save(responses) {
       Object.assign(this.$magpie.measurements, responses);

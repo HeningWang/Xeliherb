@@ -25,7 +25,8 @@
           information and that you agree to take part.
         </p>
         <p>The study takes about three minutes.</p>
-        <button @click="$magpie.nextScreen()">I agree, start the study</button>
+        <button @click="save({})">I agree, start the study</button>
+        <Record :data="trialInfo('welcome')" />
       </Screen>
 
       <!-- Screen 2. Cover story, identical to Experiment 1 -->
@@ -39,7 +40,8 @@
           the patches.
         </p>
         <CoverPicture />
-        <button @click="$magpie.nextScreen()">Continue</button>
+        <button @click="save({})">Continue</button>
+        <Record :data="trialInfo('cover')" />
       </Screen>
 
       <!-- Screen 3. Report, ground truth and comprehension question. A wrong answer asks for another
@@ -113,6 +115,7 @@ import ReportAndFinding from './components/ReportAndFinding.vue';
 // Each cell runs as its own Prolific study whose link names the cell: ?condition=1a-H|1b-H|1b-G|1a-G
 // (sentence (1a) or (1b) of Experiment 1, ground truth H or G).
 const requested = new URL(window.location).searchParams.get('condition');
+const DESIGN_VERSION = 'v1'; // change whenever the materials change
 
 // The four causal structures of Experiment 1, as answers to the comprehension question.
 const STRUCTURES = [
@@ -150,7 +153,7 @@ export default {
     },
     trialInfo(screen) {
       const c = this.condition;
-      return { screen, condition: c.condition, cell: c.cell, truth: c.truth, sentence: c.sentence };
+      return { screen, condition: c.condition, cell: c.cell, truth: c.truth, sentence: c.sentence, design_version: DESIGN_VERSION };
     },
     save(responses) {
       Object.assign(this.$magpie.measurements, responses);

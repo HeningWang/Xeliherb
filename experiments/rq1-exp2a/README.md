@@ -29,7 +29,8 @@ Pushing to `main` deploys to GitHub Pages.
 
 ## Data
 
-Two rows per participant, each with `condition`, `cell`, `truth` and `sentence`.
+Four rows per participant (`screen` = welcome, cover, comprehension, judgement), each with `condition`, `cell`,
+`truth`, `sentence`, `design_version` and magpie's `responseTime`.
 `screen = comprehension`: `comprehension_attempts` (every answer chosen, as G/R/H/N, e.g. `G|H`),
 `comprehension_first_correct` and `comprehension_order` (display order of the answers).
 `screen = judgement`: `judgement` (Wrong, Partly right or Right).
