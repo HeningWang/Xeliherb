@@ -3,3 +3,4 @@ condition,cell,sentence,truth
 1b-H,false control,Ralocrop causes an increase in xeliherb yields.,H
 1b-G,true control,Ralocrop causes an increase in xeliherb yields.,G
 1a-G,underinformative,Higher xeliherb yields are associated with the presence of ralocrop.,G
+1c-H,neutral control,Higher xeliherb yields occur more often where ralocrop is present.,H

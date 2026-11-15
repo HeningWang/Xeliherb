@@ -9,13 +9,15 @@ question about the finding until they are correct, and judge the report *wrong*,
 
 ## Conditions and Prolific
 
-The four cells (`trials/conditions.csv`) run as four Prolific studies, and each study link names its cell:
+The five cells (`trials/conditions.csv`) run as five Prolific studies, and each study link names its cell:
 
 ```
 https://heningwang.github.io/Xeliherb/experiments/rq1-exp2a/?condition=1a-H&PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
 ```
 
-with `condition=1a-H` (critical), `1b-H` (false control), `1b-G` (true control) or `1a-G` (underinformative).
+with `condition=1a-H` (critical), `1b-H` (false control), `1c-H` (neutral control), `1b-G` (true control) or `1a-G`
+(underinformative). `1a`, `1b` and `1c` are the association, causal and neutral sentences; `H` is the common cause and
+`G` the forward link as ground truth.
 A link without a valid condition shows a "cannot start" page.
 
 ## Before launch

@@ -112,8 +112,8 @@ import conditions from '../trials/conditions.csv';
 import CoverPicture from './components/CoverPicture.vue';
 import ReportAndFinding from './components/ReportAndFinding.vue';
 
-// Each cell runs as its own Prolific study whose link names the cell: ?condition=1a-H|1b-H|1b-G|1a-G
-// (sentence (1a) or (1b) of Experiment 1, ground truth H or G).
+// Each cell runs as its own Prolific study whose link names the cell: ?condition=1a-H|1b-H|1c-H|1b-G|1a-G
+// (association, causal or neutral sentence; ground truth H, the common cause, or G, the forward link).
 const requested = new URL(window.location).searchParams.get('condition');
 const DESIGN_VERSION = 'v1'; // change whenever the materials change
 
