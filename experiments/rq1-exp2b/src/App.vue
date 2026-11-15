@@ -98,7 +98,7 @@
 import _ from 'lodash';
 import lists from '../trials/lists.csv';
 import critical from '../trials/critical.csv';
-import fillers from '../trials/fillers.csv';
+import controls from '../trials/controls.csv';
 import CoverPicture from './components/CoverPicture.vue';
 import Rating from './components/Rating.vue';
 
@@ -108,16 +108,16 @@ const requested = new URL(window.location).searchParams.get('condition');
 const list = lists.find((l) => l.condition === requested) || null;
 const DESIGN_VERSION = 'v1'; // change whenever the materials change
 
-// The twelve sentences of this list: four critical items in their assigned version, and the eight fillers.
+// The twelve sentences of this list: four critical items in their assigned version, and the eight control sentences.
 function listSentences(l) {
   const crit = critical.map((c) => ({ item: c.item, type: l[c.item], text: c[l[c.item]] }));
-  return [...crit, ...fillers.map((f) => ({ item: f.item, type: f.type, text: f.text }))];
+  return [...crit, ...controls.map((c) => ({ item: c.item, type: c.type, text: c.text }))];
 }
 
 const isCritical = (s) => s.type === 'association' || s.type === 'causal';
 
-// The order is random per participant, with three constraints: the first two sentences are fillers of
-// different types, two critical items are never adjacent, and the last sentence is a filler.
+// The order is random per participant, with three constraints: the first two sentences are control sentences of
+// different types, two critical items are never adjacent, and the last sentence is a control sentence.
 function orderOk(o) {
   if (isCritical(o[0]) || isCritical(o[1]) || o[0].type === o[1].type) return false;
   if (isCritical(o[o.length - 1])) return false;

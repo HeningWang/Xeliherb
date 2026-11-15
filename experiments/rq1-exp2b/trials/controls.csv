@@ -1,0 +1,9 @@
+item,type,text
+c-camp,contradiction,"Mira visited the northern camp last week, but she has never been to the northern camp."
+c-brothers,contradiction,"Tom has three brothers, but he has no siblings."
+c-report,contradiction,"Tom finished the report yesterday, but he never started it."
+c-tank,contradiction,"The water tank is full, but there is no water in it."
+c-some,cancellation,"Some of the colonists came to the meeting, but none of them stayed away."
+c-and,cancellation,"Mira took off her helmet and came inside, but not in that order."
+c-a,cancellation,"Tom broke a finger yesterday, but not one of his own."
+c-or,cancellation,"Mira will repair the radio or the pump today, but she may well repair both."
