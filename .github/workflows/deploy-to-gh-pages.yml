@@ -17,6 +17,9 @@ jobs:
           - experiments/2a/
           - experiments/2b/
           - experiments/3a/
+          - experiments/rq1-exp1/
+          - experiments/rq1-exp2a/
+          - experiments/rq1-exp2b/
           #- experiments/3b/# temporarily disabled due to build issues
 
     runs-on: ubuntu-latest
