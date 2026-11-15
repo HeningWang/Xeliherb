@@ -1,8 +1,8 @@
 # Experiment 2b (RQ1b): cancellation
 
 Journal Experiment 2b, as specified in the Dissertation repository at
-`subprojects/sub1-xeliherb/drafts/journal-background/sub1_journal2026_rq1_rq2_experiment_implementation_plan_v1.md`
-and preregistered in `sub1_journal2026_rq1_preregistration_v1.tex` next to it.
+`subprojects/sub1-xeliherb/drafts/rq1-experiments/plan/sub1_journal2026_rq1_rq2_experiment_implementation_plan_v1.md`
+and preregistered in `drafts/rq1-experiments/preregistration/` there.
 Participants rate twelve sentences ("Does the colonist contradict themselves?", 0–100): four critical items,
 two in the association version and two in the causal version, and eight fillers (four contradictions and four
 cancellations of *some*, *and*, *a* and *or*).

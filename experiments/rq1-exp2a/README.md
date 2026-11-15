@@ -1,8 +1,8 @@
 # Experiment 2a (RQ1b): truth-value judgement
 
 Journal Experiment 2a, as specified in the Dissertation repository at
-`subprojects/sub1-xeliherb/drafts/journal-background/sub1_journal2026_rq1_rq2_experiment_implementation_plan_v1.md`
-and preregistered in `sub1_journal2026_rq1_preregistration_v1.tex` next to it.
+`subprojects/sub1-xeliherb/drafts/rq1-experiments/plan/sub1_journal2026_rq1_rq2_experiment_implementation_plan_v1.md`
+and preregistered in `drafts/rq1-experiments/preregistration/` there.
 Participants read the colonist's sentence (1a) *associated* or (1b) *causes* of Experiment 1, learn what the
 researchers found (ground truth H, a common cause, or G, ralocrop raises yield), answer a comprehension
 question about the finding until they are correct, and judge the report *wrong*, *partly right* or *right*.

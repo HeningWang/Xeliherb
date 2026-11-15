@@ -40,7 +40,16 @@
           the patches.
         </p>
         <CoverPicture />
-        <button @click="save({})">Continue</button>
+        <!-- Comprehension check: which plant's yield varies. It names no relation between the plants;
+             a wrong answer asks for another choice, Continue appears after the correct one. -->
+        <p class="lead">In the story, which plant has a high yield in some patches and a low yield in others?</p>
+        <MultipleChoiceInput :options="checkOrder" @update:response="checkAttempts.push($event)" />
+        <p v-if="checkAttempts.length && !checkCorrect" class="retry">
+          That is not what the story says. Please read the story again and choose another answer.
+        </p>
+        <button v-if="checkCorrect" @click="save({ check_attempts: checkAttempts.join('|'),
+                                                   check_first_correct: checkAttempts[0] === CHECK_ANSWER,
+                                                   check_order: checkOrder.join('|') })">Continue</button>
         <Record :data="trialInfo('cover')" />
       </Screen>
 
@@ -149,6 +158,8 @@ const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
 const DESIGN_VERSION = 'v1'; // change whenever the materials change
+const CHECK_ANSWER = 'Xeliherb';
+const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
 
 const ALTERNATIVES = [
   { id: 'R', text: 'Xeliherb makes ralocrop grow better, but ralocrop does not affect xeliherb.' },
@@ -164,6 +175,9 @@ export default {
       condition: conditions.find((c) => c.condition === requested) || null,
       harvestOrder: _.shuffle(patches), // the fields group gathers the patches in a random order
       alternatives: _.shuffle(ALTERNATIVES),
+      CHECK_ANSWER,
+      checkOrder: _.shuffle(CHECK_OPTIONS),
+      checkAttempts: [],
       shown: 0,
       revealMs: [],
       screenStart: Date.now(),
@@ -171,6 +185,9 @@ export default {
     };
   },
   computed: {
+    checkCorrect() {
+      return this.checkAttempts[this.checkAttempts.length - 1] === CHECK_ANSWER;
+    },
     allGathered() {
       return this.condition.evidence !== 'fields' || this.shown === patches.length;
     },
@@ -235,6 +252,9 @@ export default {
 
 .lead { margin-top: 24px; font-weight: 600; }
 .rating { margin: 24px 0; }
+.multiple-choice .options { text-align: left; display: inline-block; }
+.multiple-choice label { display: block; margin: 6px 0; cursor: pointer; }
+.retry { color: #A33; }
 .rating.unset .vue-slider-dot, .rating.unset .vue-slider-dot *, .rating.unset .vue-slider-process { visibility: hidden; }
 .rating .vue-slider-rail { cursor: pointer; }
 .debrief summary { cursor: pointer; font-weight: 600; }
