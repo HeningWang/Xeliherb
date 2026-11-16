@@ -162,9 +162,9 @@ const CHECK_ANSWER = 'Xeliherb';
 const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
 
 const ALTERNATIVES = [
-  { id: 'R', text: 'Xeliherb makes ralocrop grow better, but ralocrop does not affect xeliherb.' },
-  { id: 'H', text: 'Fertile soil makes both plants grow better, but neither plant affects the other.' },
-  { id: 'N', text: 'The two plants do not affect each other and have no common cause; they grew together in these patches by chance.' }
+  { id: 'R', text: 'Xeliherb makes ralocrop grow better, but ralocrop does not affect the growth of xeliherb.' },
+  { id: 'H', text: 'Fertile soil makes both plants grow better, but neither plant affects the other’s growth.' },
+  { id: 'N', text: 'The two plants do not affect each other’s growth and have no common cause; they grew together in these patches by chance.' }
 ];
 
 export default {
@@ -244,9 +244,16 @@ export default {
 .patches table { width: auto; }
 .patches td, .patches th { white-space: nowrap; min-width: 56px; padding: 5px 4px; }
 .patches td.harvest { vertical-align: bottom; font-size: 14px; }
-.patches .bar-wrap { height: 58px; display: flex; align-items: flex-end; justify-content: center; }
-.patches .bar { width: 22px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
+.patches .bar-wrap, .sorted .bar-wrap { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
+.patches .bar, .sorted .bar { width: 26px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
 .patches td.ralo { height: 36px; vertical-align: middle; }
+.patches td.with-ralo, .sorted .group.with-ralo { background: #FBE6CF; }
+.sorted { max-width: none; }
+.sorted .groups { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+.sorted .group { border: 1px solid var(--rule); border-radius: 6px; padding: 8px 12px 10px; }
+.sorted .group-label { font-weight: 600; margin-bottom: 6px; }
+.sorted .bars { display: flex; gap: 6px; }
+.sorted .col { min-width: 48px; font-size: 14px; text-align: center; }
 .patches td.pending { background: #F2F1EC; border-left: 2px solid #fff; border-right: 2px solid #fff; }
 .patches .none { color: var(--muted); }
 

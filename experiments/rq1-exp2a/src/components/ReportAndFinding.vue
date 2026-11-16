@@ -29,7 +29,7 @@ export default {
   },
   data: () => ({
     findings: {
-      H: 'Fertile soil makes both plants grow better, but neither plant affects the other.',
+      H: 'Fertile soil makes both plants grow better, but neither plant affects the other’s growth.',
       G: 'Ralocrop makes xeliherb grow better.'
     }
   })
