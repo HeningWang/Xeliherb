@@ -157,7 +157,7 @@ import Rating from './components/Rating.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v1'; // change whenever the materials change
+const DESIGN_VERSION = 'v2'; // change whenever the materials change
 const CHECK_ANSWER = 'Xeliherb';
 const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
 
