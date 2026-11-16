@@ -166,6 +166,7 @@ export default {
 
 <style>
 :root { --ink: #2B2A30; --muted: #6b6875; --rule: #D7D8E2; color-scheme: light; }
+html, body { background: #fff; color: var(--ink); } /* a light page whatever the participant's system theme */
 
 .scene { width: 100%; height: auto; display: block; margin: 12px 0 4px; }
 .legend { display: flex; gap: 20px; font-size: 14px; align-items: center; margin-bottom: 8px; }

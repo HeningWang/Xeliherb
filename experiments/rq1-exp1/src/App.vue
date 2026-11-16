@@ -42,11 +42,13 @@
         <CoverPicture />
         <!-- Comprehension check: which plant's yield varies. It names no relation between the plants;
              a wrong answer asks for another choice, Continue appears after the correct one. -->
-        <p class="lead">In the story, which plant has a high yield in some patches and a low yield in others?</p>
-        <MultipleChoiceInput :options="checkOrder" @update:response="checkAttempts.push($event)" />
-        <p v-if="checkAttempts.length && !checkCorrect" class="retry">
-          That is not what the story says. Please read the story again and choose another answer.
-        </p>
+        <div class="question-box">
+          <p class="q"><span class="q-mark">Q:</span> In the story, which plant has a high yield in some patches and a low yield in others?</p>
+          <MultipleChoiceInput :options="checkOrder" @update:response="checkAttempts.push($event)" />
+          <p v-if="checkAttempts.length && !checkCorrect" class="retry">
+            That is not what the story says. Please read the story again and choose another answer.
+          </p>
+        </div>
         <button v-if="checkCorrect" @click="save({ check_attempts: checkAttempts.join('|'),
                                                    check_first_correct: checkAttempts[0] === CHECK_ANSWER,
                                                    check_order: checkOrder.join('|') })">Continue</button>
@@ -59,7 +61,9 @@
           <Evidence :condition="condition" :patches="harvestOrder" :shown="shown" with-intro />
           <button v-if="!allGathered" @click="gather">Gather the next patch</button>
           <template v-else>
-            <Rating v-model="answers.G" question="How likely is it that ralocrop makes xeliherb grow better?" />
+            <div class="question-box">
+              <Rating v-model="answers.G" question="How likely is it that ralocrop makes xeliherb grow better?" />
+            </div>
             <button v-if="answers.G !== null" @click="save({ G: answers.G, harvest_order: harvestOrderText,
                                                              reveal_ms: revealMs.join('|') || null, gather_ms: gatherMs })">Continue</button>
           </template>
@@ -71,11 +75,13 @@
       <Screen>
         <Slide>
           <Evidence :condition="condition" :patches="harvestOrder" />
-          <p class="lead">
-            Besides ralocrop making xeliherb grow better, the two plants could occur together for other reasons.
-            How likely is each of these explanations?
-          </p>
-          <Rating v-for="a in alternatives" :key="a.id" v-model="answers[a.id]" :question="a.text" />
+          <div class="question-box">
+            <p class="context">
+              Besides ralocrop making xeliherb grow better, the two plants could occur together for other reasons.
+            </p>
+            <p class="q"><span class="q-mark">Q:</span> How likely is each of these explanations?</p>
+            <Rating v-for="a in alternatives" :key="a.id" v-model="answers[a.id]" :question="a.text" :prefix="false" />
+          </div>
           <button v-if="alternatives.every((a) => answers[a.id] !== null)"
                   @click="save({ R: answers.R, H: answers.H, N: answers.N, alternatives_order: alternativesOrderText })">
             Continue
@@ -88,8 +94,10 @@
       <Screen>
         <Slide>
           <Evidence :condition="condition" :patches="harvestOrder" />
-          <Rating v-model="answers.C" question="How strongly do high xeliherb yield and ralocrop go together?"
-                  left="not at all" right="very strongly" />
+          <div class="question-box">
+            <Rating v-model="answers.C" question="How strongly do high xeliherb yield and ralocrop go together?"
+                    left="not at all" right="very strongly" />
+          </div>
           <button v-if="answers.C !== null" @click="save({ C: answers.C })">Continue</button>
           <Record :data="trialInfo('strength')" />
         </Slide>
@@ -99,12 +107,14 @@
       <Screen>
         <Slide>
           <Evidence :condition="condition" :patches="harvestOrder" />
-          <p class="lead">
-            The colony is deciding whether to cultivate ralocrop together with xeliherb next season.
-            Cultivating ralocrop takes extra land, water and work.
-          </p>
-          <Rating v-model="answers.D"
-                  question="How likely is it that you would cultivate ralocrop together with xeliherb next season?" />
+          <div class="question-box">
+            <p class="context">
+              The colony is deciding whether to cultivate ralocrop together with xeliherb next season.
+              Cultivating ralocrop takes extra land, water and work.
+            </p>
+            <Rating v-model="answers.D"
+                    question="How likely is it that you would cultivate ralocrop together with xeliherb next season?" />
+          </div>
           <button v-if="answers.D !== null" @click="save({ D: answers.D })">Continue</button>
           <Record :data="trialInfo('decision')" />
         </Slide>
@@ -157,7 +167,7 @@ import Rating from './components/Rating.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v2'; // change whenever the materials change
+const DESIGN_VERSION = 'v3'; // change whenever the materials change
 const CHECK_ANSWER = 'Xeliherb';
 const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
 
@@ -221,6 +231,7 @@ export default {
 
 <style>
 :root { --ink: #2B2A30; --muted: #6b6875; --rule: #D7D8E2; color-scheme: light; }
+html, body { background: #fff; color: var(--ink); } /* a light page whatever the participant's system theme */
 
 .scene { width: 100%; height: auto; display: block; margin: 12px 0 4px; }
 .legend { display: flex; gap: 20px; font-size: 14px; align-items: center; margin-bottom: 8px; }
@@ -258,7 +269,15 @@ export default {
 .patches .none { color: var(--muted); }
 
 .lead { margin-top: 24px; font-weight: 600; }
+/* Questions and their response options sit in a framed box, apart from the evidence or report above them. */
+.question-box { border: 2px solid var(--ink); border-radius: 8px; background: #F7F7FA; padding: 6px 24px 10px; margin: 28px auto 16px; max-width: 760px; text-align: center; }
+.question-box .context { margin: 14px 0 4px; }
+.q { font-weight: 600; font-size: 18px; margin: 14px 0 8px; }
+.q-mark { font-weight: 700; margin-right: 4px; }
+.question-box .multiple-choice { margin-bottom: 8px; }
 .rating { margin: 24px 0; }
+.question-box .rating { margin: 14px 0 18px; }
+.question-box .rating + .rating { border-top: 1px solid var(--rule); padding-top: 12px; }
 .multiple-choice .options { text-align: left; display: inline-block; }
 .multiple-choice label { display: block; margin: 6px 0; cursor: pointer; }
 .retry { color: #A33; }
