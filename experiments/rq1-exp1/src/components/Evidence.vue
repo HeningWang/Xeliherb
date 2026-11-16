@@ -9,10 +9,7 @@
         Click the button to gather the next patch.
       </p>
       <PatchTable :patches="patches" :shown="shown" />
-      <template v-if="shown === patches.length">
-        <SortedPatches :patches="patches" />
-        <CrossTable title="Summary of the patches" :patches="patches" />
-      </template>
+      <CrossTable v-if="shown === patches.length" title="Summary of the patches" :patches="patches" />
     </template>
 
     <template v-else>
@@ -34,11 +31,10 @@
 <script>
 import PatchTable from './PatchTable.vue';
 import CrossTable from './CrossTable.vue';
-import SortedPatches from './SortedPatches.vue';
 
 export default {
   name: 'Evidence',
-  components: { PatchTable, CrossTable, SortedPatches },
+  components: { PatchTable, CrossTable },
   props: {
     condition: { type: Object, required: true },
     patches: { type: Array, required: true },

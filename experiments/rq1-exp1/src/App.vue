@@ -167,7 +167,7 @@ import Rating from './components/Rating.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v3'; // change whenever the materials change
+const DESIGN_VERSION = 'v4'; // change whenever the materials change
 const CHECK_ANSWER = 'Xeliherb';
 const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
 
@@ -255,16 +255,10 @@ html, body { background: #fff; color: var(--ink); } /* a light page whatever the
 .patches table { width: auto; }
 .patches td, .patches th { white-space: nowrap; min-width: 56px; padding: 5px 4px; }
 .patches td.harvest { vertical-align: bottom; font-size: 14px; }
-.patches .bar-wrap, .sorted .bar-wrap { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
-.patches .bar, .sorted .bar { width: 26px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
+.patches .bar-wrap { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
+.patches .bar { width: 26px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
 .patches td.ralo { height: 36px; vertical-align: middle; }
-.patches td.with-ralo, .sorted .group.with-ralo { background: #FBE6CF; }
-.sorted { max-width: none; }
-.sorted .groups { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
-.sorted .group { border: 1px solid var(--rule); border-radius: 6px; padding: 8px 12px 10px; }
-.sorted .group-label { font-weight: 600; margin-bottom: 6px; }
-.sorted .bars { display: flex; gap: 6px; }
-.sorted .col { min-width: 48px; font-size: 14px; text-align: center; }
+.patches td.with-ralo { background: #FBE6CF; }
 .patches td.pending { background: #F2F1EC; border-left: 2px solid #fff; border-right: 2px solid #fff; }
 .patches .none { color: var(--muted); }
 
