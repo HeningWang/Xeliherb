@@ -1,5 +1,7 @@
-condition,evidence,report
-fields,fields,
-note,note,
-1a,report,Higher xeliherb yields are associated with the presence of ralocrop.
-1b,report,Ralocrop causes an increase in xeliherb yields.
+condition,info,vehicle,report
+obs-own,obs,own,
+obs-data,obs,data,
+obs-verbal,obs,verbal,Higher xeliherb yields are associated with the presence of ralocrop.
+int-own,int,own,
+int-data,int,data,
+int-verbal,int,verbal,Ralocrop causes an increase in xeliherb yields.

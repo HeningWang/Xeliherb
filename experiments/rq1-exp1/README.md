@@ -1,23 +1,27 @@
-# Experiment 1 (RQ1a): the effect of association wording on causal belief
+# Experiment 1 (RQ1a): information type and vehicle
 
 Journal Experiment 1, as specified in the Dissertation repository at
 `subprojects/sub1-xeliherb/drafts/rq1-experiments/plan/sub1_journal2026_rq1_rq2_experiment_implementation_plan_v1.md`
 and preregistered in `drafts/rq1-experiments/preregistration/` there.
-Participants learn the same patches in one of four ways (fields, note, (1a) associated, (1b) causes)
-and rate belief in G, the alternatives R, H and N, the perceived strength C and the cultivation decision D.
+A 2 x 3 between-participants design: information type (observational: wild patches; interventional: a test field
+in which the colonists plant ralocrop) crossed with the vehicle (own observation: participants gather the ten patches;
+data reported: a colonist sends the patch table and summary; verbal report: a colonist sends one sentence).
+The verbal-report groups see no kind of patch; their sentence is "associated with" (observational) or "causes"
+(interventional). Participants answer an attention check, then predict how many of 100 low-yield patches without
+ralocrop will give a high yield once ralocrop is planted, and finally choose a cultivation policy.
 
 ## Conditions and Prolific
 
 Each group runs as its own Prolific study, and the study link names the group:
 
 ```
-https://heningwang.github.io/Xeliherb/experiments/rq1-exp1/?condition=fields&batch=1&PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
+https://heningwang.github.io/Xeliherb/experiments/rq1-exp1/?condition=obs-own&batch=1&PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
 ```
 
-with `condition=fields`, `note`, `1a` or `1b`, and `batch` the batch number. Each batch publishes four new studies,
-one per group with 20 places each, at the same time, so the groups stay equal and every row records its batch;
-exclude participants of all earlier studies in each new one. Give the four studies the same title, description, payment and time estimate,
-enter the same completion code in each, and exclude participants of the other three studies in each.
+with `condition=obs-own`, `obs-data`, `obs-verbal`, `int-own`, `int-data` or `int-verbal`, and `batch` the batch number.
+Each batch publishes six new studies, one per group with equal places, at the same time, so the groups stay equal and
+every row records its batch; exclude participants of all earlier studies in each new one. Give the six studies the same
+title, description, payment and time estimate, and enter the same completion code in each.
 A link without a valid condition shows a "cannot start" page.
 
 The group texts are in `trials/conditions.csv` and the patches in `trials/patches.csv`;
@@ -41,10 +45,9 @@ and open http://localhost:8096/?condition=fields. In debug mode the data appear 
 
 ## Data
 
-One row per screen (`screen` = welcome, cover, evidence, alternatives, strength, decision), each with `condition`,
-`batch`, `design_version` and magpie's `responseTime` (the time spent on the screen).
-Cover: `check_attempts` (every answer to the comprehension question, e.g. `Ralocrop|Xeliherb`),
-`check_first_correct` and `check_order` (display order of the answers). Evidence: `G`, and in the fields group `harvest_order` (patch numbers in
-`trials/patches.csv`, in the order of gathering) and `reveal_ms` (time of each click since the screen opened) and `gather_ms`
-(time from the first to the last click).
-Alternatives: `R`, `H`, `N` and `alternatives_order`. Strength: `C`. Decision: `D`. All ratings 0–100.
+One row per screen (`screen` = welcome, cover, critical, policy), each with `condition`, `info`, `vehicle`,
+`batch`, `design_version` (v5 for the 2 x 3 design) and magpie's `responseTime` (the time spent on the screen).
+Critical: `prediction` (0-100), `attention` (the answer), `attention_correct`, `attention_order` (display order),
+`patch_order` (patch numbers in `trials/patches.csv`, in the order of the patch table; not in the verbal-report
+groups), and in the own-observation groups `reveal_ms` (time of each click since the screen opened) and `gather_ms`
+(time from the first to the last click). Policy: `policy` and `policy_order`.

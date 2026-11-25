@@ -1,14 +1,14 @@
 <template>
-  <!-- The ten patches counted by harvest (high/low) and ralocrop: the colonist's note, and the
-       summary the fields group sees after the last patch. Counts are computed from trials/patches.csv. -->
+  <!-- The ten patches counted by harvest (high/low) and ralocrop: part of the colonist's report in the data-reported
+       groups, and the summary the own-observation groups see after the last patch. Counts are computed from trials/patches.csv. -->
   <div class="table-block">
     <h4>{{ title }}</h4>
     <table>
       <thead>
         <tr>
           <th>Harvest of xeliherb <XeliIcon /></th>
-          <th>Without ralocrop</th>
-          <th>With ralocrop <RaloIcon /></th>
+          <th>{{ info === 'int' ? 'Not planted' : 'Without ralocrop' }}</th>
+          <th>{{ info === 'int' ? 'Ralocrop planted' : 'With ralocrop' }} <RaloIcon /></th>
         </tr>
       </thead>
       <tbody>
@@ -33,7 +33,8 @@ export default {
   components: { XeliIcon, RaloIcon },
   props: {
     title: { type: String, required: true },
-    patches: { type: Array, required: true }
+    patches: { type: Array, required: true },
+    info: { type: String, required: true } // 'obs' or 'int'
   },
   computed: {
     rows() {

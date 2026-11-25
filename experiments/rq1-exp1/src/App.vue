@@ -29,98 +29,66 @@
         <Record :data="trialInfo('welcome')" />
       </Screen>
 
-      <!-- Screen 2. Cover story -->
+      <!-- Screen 2. Cover story. The text is the same in all six groups; the own-observation and data-reported
+           groups also see a box with their kind of patches, the verbal-report groups see no kind of patch. -->
       <Screen>
         <p>
-          You are one of a group of colonists who have just settled on a distant planet called Xelifan-3. To survive
-          there, the colony depends on a plant called <strong>xeliherb</strong>, which grows only on Xelifan-3. The colonists have not
-          yet started to cultivate <strong>xeliherb</strong>, so for now they gather it where it grows wild, in patches scattered
-          across the plains near the settlement. Some patches give a high yield of <strong>xeliherb</strong> and others a low yield,
-          and the colonists would like to gather as much as possible. Another wild plant, ralocrop, grows in some of
-          the patches.
+          You are one of a group of colonists who have just settled on a distant planet called Xelifan-3. The colony
+          depends on a plant called <strong>xeliherb</strong> (shown as <XeliIcon />), which grows in patches on the
+          plains near the settlement. Some patches give a <strong>high</strong> yield of xeliherb and others a
+          <strong>low</strong> yield. Given its relevance for survival, obtaining a high yield of xeliherb is very important.
         </p>
-        <CoverPicture />
-        <!-- Comprehension check: which plant's yield varies. It names no relation between the plants;
-             a wrong answer asks for another choice, Continue appears after the correct one. -->
-        <div class="question-box">
-          <p class="q"><span class="q-mark">Q:</span> In the story, which plant has a high yield in some patches and a low yield in others?</p>
-          <MultipleChoiceInput :options="checkOrder" @update:response="checkAttempts.push($event)" />
-          <p v-if="checkAttempts.length && !checkCorrect" class="retry">
-            That is not what the story says. Please read the story again and choose another answer.
-          </p>
-        </div>
-        <button v-if="checkCorrect" @click="save({ check_attempts: checkAttempts.join('|'),
-                                                   check_first_correct: checkAttempts[0] === CHECK_ANSWER,
-                                                   check_order: checkOrder.join('|') })">Continue</button>
+        <p>Another plant, <strong>ralocrop</strong> (shown as <RaloIcon />), can also grow in these patches.</p>
+        <PatchCard v-if="showsPatches" :info="condition.info" />
+        <button @click="save({})">Continue</button>
         <Record :data="trialInfo('cover')" />
       </Screen>
 
-      <!-- Screen 3. The evidence, and belief in G (main measure) -->
+      <!-- Screen 3. The evidence, the attention check and the intervention prediction (main measure) -->
       <Screen>
         <Slide>
-          <Evidence :condition="condition" :patches="harvestOrder" :shown="shown" with-intro />
+          <PatchCard v-if="showsPatches" :info="condition.info" caption />
+          <Evidence :condition="condition" :patches="harvestOrder" :shown="shown" />
           <button v-if="!allGathered" @click="gather">Gather the next patch</button>
           <template v-else>
+            <!-- Attention check before the critical question; recorded without feedback. -->
             <div class="question-box">
-              <Rating v-model="answers.G" question="How likely is it that ralocrop makes xeliherb grow better?" />
+              <p class="q"><span class="q-mark">Q:</span> Which plant does the colony depend on for its survival?</p>
+              <MultipleChoiceInput :options="attentionOrder" @update:response="attention = $event" />
             </div>
-            <button v-if="answers.G !== null" @click="save({ G: answers.G, harvest_order: harvestOrderText,
-                                                             reveal_ms: revealMs.join('|') || null, gather_ms: gatherMs })">Continue</button>
+            <div v-if="attention" class="question-box">
+              <p class="context">
+                Here are 100 other patches. Last season, all of them gave a <strong>low</strong> xeliherb yield,
+                and none of them had ralocrop.
+              </p>
+              <LowPatches />
+              <p class="context">The colonists are now going to plant ralocrop in all of these patches.</p>
+              <Rating v-model="prediction" question="How many of them will give a high xeliherb yield this season?"
+                      left="0" right="100" />
+            </div>
+            <button v-if="attention && prediction !== null"
+                    @click="save({ prediction, attention, attention_correct: attention === ATTENTION_ANSWER,
+                                   attention_order: attentionOrder.join('|'), patch_order: patchOrderText,
+                                   reveal_ms: revealMs.join('|') || null, gather_ms: gatherMs })">Continue</button>
           </template>
-          <Record :data="trialInfo('evidence')" />
+          <Record :data="trialInfo('critical')" />
         </Slide>
       </Screen>
 
-      <!-- Screen 4. R, H and N, one slider each, in random order -->
+      <!-- Screen 4. Cultivation policy, the decision of the earlier XeliHerb studies -->
       <Screen>
         <Slide>
-          <Evidence :condition="condition" :patches="harvestOrder" />
           <div class="question-box">
-            <p class="context">
-              Besides ralocrop making xeliherb grow better, the two plants could occur together for other reasons.
-            </p>
-            <p class="q"><span class="q-mark">Q:</span> How likely is each of these explanations?</p>
-            <Rating v-for="a in alternatives" :key="a.id" v-model="answers[a.id]" :question="a.text" :prefix="false" />
+            <p class="context">Cultivating ralocrop is costly: it needs extra resources, water and work.</p>
+            <p class="q"><span class="q-mark">Q:</span> As a general policy, would you cultivate both xeliherb and
+              ralocrop on the colony's fields, or only xeliherb?</p>
+            <ForcedChoiceInput :options="policyOrder" @update:response="save({ policy: $event, policy_order: policyOrder.join('|') })" />
           </div>
-          <button v-if="alternatives.every((a) => answers[a.id] !== null)"
-                  @click="save({ R: answers.R, H: answers.H, N: answers.N, alternatives_order: alternativesOrderText })">
-            Continue
-          </button>
-          <Record :data="trialInfo('alternatives')" />
+          <Record :data="trialInfo('policy')" />
         </Slide>
       </Screen>
 
-      <!-- Screen 5. Perceived strength of the association (C) -->
-      <Screen>
-        <Slide>
-          <Evidence :condition="condition" :patches="harvestOrder" />
-          <div class="question-box">
-            <Rating v-model="answers.C" question="How strongly do high xeliherb yield and ralocrop go together?"
-                    left="not at all" right="very strongly" />
-          </div>
-          <button v-if="answers.C !== null" @click="save({ C: answers.C })">Continue</button>
-          <Record :data="trialInfo('strength')" />
-        </Slide>
-      </Screen>
-
-      <!-- Screen 6. Cultivation decision (D) -->
-      <Screen>
-        <Slide>
-          <Evidence :condition="condition" :patches="harvestOrder" />
-          <div class="question-box">
-            <p class="context">
-              The colony is deciding whether to cultivate ralocrop together with xeliherb next season.
-              Cultivating ralocrop takes extra land, water and work.
-            </p>
-            <Rating v-model="answers.D"
-                    question="How likely is it that you would cultivate ralocrop together with xeliherb next season?" />
-          </div>
-          <button v-if="answers.D !== null" @click="save({ D: answers.D })">Continue</button>
-          <Record :data="trialInfo('decision')" />
-        </Slide>
-      </Screen>
-
-      <!-- Screen 7. Thanks and debriefing; the button submits the data -->
+      <!-- Screen 5. Thanks and debriefing; the button submits the data -->
       <Screen>
         <h3>The experiment is finished. Thank you for taking part!</h3>
         <details class="debrief">
@@ -136,13 +104,13 @@
             not because ice cream causes sunburn.
           </p>
           <p>
-            In this study, everyone learned about the same xeliherb patches: in most high-yield patches ralocrop
-            grew, and in most low-yield patches it did not. Some participants gathered xeliherb from the patches
-            themselves, some received a table of them from another colonist, and others received only a sentence
-            from the colonist that described what was found, in different words. We want to know whether the way the
-            same observation is passed on changes how strongly people believe that one thing causes the other. This
-            helps us understand how people learn about causes from what others tell them, for example from news
-            reports about health or science.
+            In this study, everyone learned about the same ten xeliherb patches: in most high-yield patches ralocrop
+            grew, and in most low-yield patches it did not. For some participants, ralocrop grew wild in these patches;
+            for others, the colonists had planted it in a test field. Some participants gathered xeliherb from the
+            patches themselves, some received a table of them from another colonist, and others received only a
+            sentence from the colonist. We want to know whether the kind of evidence and the way it is passed on change
+            how strongly people believe that one thing causes the other. This helps us understand how people learn
+            about causes from what others tell them, for example from news reports about health or science.
           </p>
           <p>Please do not tell others what the study is about, because they may still take part.</p>
         </details>
@@ -158,57 +126,52 @@
 import _ from 'lodash';
 import conditions from '../trials/conditions.csv';
 import patches from '../trials/patches.csv';
-import CoverPicture from './components/CoverPicture.vue';
 import Evidence from './components/Evidence.vue';
+import LowPatches from './components/LowPatches.vue';
+import PatchCard from './components/PatchCard.vue';
+import RaloIcon from './components/RaloIcon.vue';
 import Rating from './components/Rating.vue';
+import XeliIcon from './components/XeliIcon.vue';
 
-// Each group runs as its own Prolific study whose link names the group: ?condition=fields|note|1a|1b.
-// Each batch publishes new studies whose links add &batch=N, so that the batch is recorded with every row.
+// Each group runs as its own Prolific study whose link names the group, ?condition=obs-own|obs-data|obs-verbal|
+// int-own|int-data|int-verbal. Each batch publishes new studies whose links add &batch=N, recorded with every row.
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v4'; // change whenever the materials change
-const CHECK_ANSWER = 'Xeliherb';
-const CHECK_OPTIONS = ['Xeliherb', 'Ralocrop', 'Both plants', 'Neither plant'];
-
-const ALTERNATIVES = [
-  { id: 'R', text: 'Xeliherb makes ralocrop grow better, but ralocrop does not affect the growth of xeliherb.' },
-  { id: 'H', text: 'Fertile soil makes both plants grow better, but neither plant affects the other’s growth.' },
-  { id: 'N', text: 'The two plants do not affect each other’s growth and have no common cause; they grew together in these patches by chance.' }
-];
+const DESIGN_VERSION = 'v5'; // 2 x 3 design (information type x vehicle); change whenever the materials change
+const ATTENTION_ANSWER = 'Xeliherb';
+const ATTENTION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
+const POLICY_OPTIONS = ['Both xeliherb and ralocrop', 'Only xeliherb'];
 
 export default {
   name: 'App',
-  components: { CoverPicture, Evidence, Rating },
+  components: { Evidence, LowPatches, PatchCard, RaloIcon, Rating, XeliIcon },
   data() {
     return {
       condition: conditions.find((c) => c.condition === requested) || null,
-      harvestOrder: _.shuffle(patches), // the fields group gathers the patches in a random order
-      alternatives: _.shuffle(ALTERNATIVES),
-      CHECK_ANSWER,
-      checkOrder: _.shuffle(CHECK_OPTIONS),
-      checkAttempts: [],
+      harvestOrder: _.shuffle(patches), // the order of the patch table, gathered or reported
+      ATTENTION_ANSWER,
+      attentionOrder: _.shuffle(ATTENTION_OPTIONS),
+      policyOrder: _.shuffle(POLICY_OPTIONS),
+      attention: null,
+      prediction: null,
       shown: 0,
       revealMs: [],
-      screenStart: Date.now(),
-      answers: { G: null, R: null, H: null, N: null, C: null, D: null }
+      screenStart: Date.now()
     };
   },
   computed: {
-    checkCorrect() {
-      return this.checkAttempts[this.checkAttempts.length - 1] === CHECK_ANSWER;
+    showsPatches() { // the verbal-report groups learn nothing about the kind of patches
+      return this.condition.vehicle !== 'verbal';
     },
     allGathered() {
-      return this.condition.evidence !== 'fields' || this.shown === patches.length;
+      return this.condition.vehicle !== 'own' || this.shown === patches.length;
     },
-    harvestOrderText() { // the order of gathering, which only the fields group sees
-      return this.condition.evidence === 'fields' ? this.harvestOrder.map((p) => p.patch).join('|') : null;
+    patchOrderText() { // the order of the patch table, which the verbal-report groups do not see
+      return this.showsPatches ? this.harvestOrder.map((p) => p.patch).join('|') : null;
     },
-    gatherMs() { // time from the first to the last gathering click, fields group only
+    gatherMs() { // time from the first to the last gathering click, own-observation groups only
       return this.revealMs.length ? this.revealMs[this.revealMs.length - 1] - this.revealMs[0] : null;
-    },
-    alternativesOrderText() {
-      return this.alternatives.map((a) => a.id).join('|');
     }
   },
   methods: {
@@ -217,7 +180,8 @@ export default {
       this.shown += 1;
     },
     trialInfo(screen) {
-      return { screen, condition: this.condition.condition, batch: BATCH, design_version: DESIGN_VERSION };
+      const { condition, info, vehicle } = this.condition;
+      return { screen, condition, info, vehicle, batch: BATCH, design_version: DESIGN_VERSION };
     },
     save(responses) {
       Object.assign(this.$magpie.measurements, responses);
@@ -233,7 +197,17 @@ export default {
 :root { --ink: #2B2A30; --muted: #6b6875; --rule: #D7D8E2; color-scheme: light; }
 html, body { background: #fff; color: var(--ink); } /* a light page whatever the participant's system theme */
 
-.scene { width: 100%; height: auto; display: block; margin: 12px 0 4px; }
+/* the box with the kind of patches: parchment for the wild patches (a map), green for the test field */
+.patch-card { border: 2px solid var(--box-line); background: var(--box-fill); border-radius: 8px; padding: 12px 14px;
+  max-width: 380px; margin: 16px auto; text-align: center; }
+.patch-card.obs { --box-fill: #F7EEDD; --box-line: #D49735; }
+.patch-card.int { --box-fill: #EAF0E8; --box-line: #5C7457; }
+.patch-card p { margin: 6px 0; font-size: 15px; }
+.patch-card .way { font-weight: 900; }
+.patch-picture { width: 100%; max-width: 300px; display: block; margin: 0 auto; }
+.icon-legend { font-size: 13px !important; color: var(--muted); }
+.icon-legend span { margin-left: 10px; white-space: nowrap; }
+.low-patches { width: 100%; max-width: 340px; display: block; margin: 8px auto; }
 .legend { display: flex; gap: 20px; font-size: 14px; align-items: center; margin-bottom: 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .icon { vertical-align: middle; }

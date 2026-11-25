@@ -1,5 +1,5 @@
 <template>
-  <!-- The fields group's raw evidence: all ten patch columns from the start, filled in the order of gathering.
+  <!-- The patch table of the own-observation and data-reported groups: all ten patch columns from the start, filled in the order of gathering.
        Each harvest is a bar proportional to its weight above the weight in kg; ralocrop is its symbol or a dash,
        and the columns of patches with ralocrop are tinted so that the two kinds of patch stand apart. -->
   <div class="table-block patches">
@@ -18,7 +18,7 @@
           </td>
         </tr>
         <tr>
-          <td>Ralocrop <RaloIcon /></td>
+          <td>{{ info === 'int' ? 'Ralocrop planted' : 'Ralocrop' }} <RaloIcon /></td>
           <td v-for="(p, k) in patches" :key="k" :class="cellClass(p, k, 'ralo')">
             <template v-if="k < shown">
               <RaloIcon v-if="p.ralocrop" /><span v-else class="none">–</span>
@@ -42,6 +42,7 @@ export default {
   components: { XeliIcon, RaloIcon },
   props: {
     patches: { type: Array, required: true }, // in the order of gathering
+    info: { type: String, required: true }, // 'obs' or 'int'
     shown: { type: Number, required: true }
   },
   methods: {
