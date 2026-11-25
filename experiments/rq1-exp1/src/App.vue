@@ -141,7 +141,7 @@ import XeliIcon from './components/XeliIcon.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v6'; // 2 x 3 design (information type x vehicle), blocking comprehension check; change whenever the materials change
+const DESIGN_VERSION = 'v7'; // 2 x 3 design (information type x vehicle), blocking comprehension check, grey palette; change whenever the materials change
 const COMPREHENSION_ANSWER = 'Xeliherb';
 const COMPREHENSION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
 const POLICY_OPTIONS = ['Both xeliherb and ralocrop', 'Only xeliherb'];
@@ -207,10 +207,10 @@ export default {
 :root { --ink: #2B2A30; --muted: #6b6875; --rule: #D7D8E2; color-scheme: light; }
 html, body { background: #fff; color: var(--ink); } /* a light page whatever the participant's system theme */
 
-/* the box with the kind of patches: parchment for the wild patches (a map), green for the test field */
+/* the box with the kind of patches: grey for the wild patches, green for the test field */
 .patch-card { border: 2px solid var(--box-line); background: var(--box-fill); border-radius: 8px; padding: 12px 14px;
   max-width: 380px; margin: 16px auto; text-align: center; }
-.patch-card.obs { --box-fill: #F7EEDD; --box-line: #D49735; }
+.patch-card.obs { --box-fill: #F3F3F3; --box-line: #8C8C8C; }
 .patch-card.int { --box-fill: #EAF0E8; --box-line: #5C7457; }
 .patch-card p { margin: 6px 0; font-size: 15px; }
 .patch-card .way { font-weight: 900; }
@@ -242,8 +242,8 @@ html, body { background: #fff; color: var(--ink); } /* a light page whatever the
 .patches .bar-wrap { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
 .patches .bar { width: 26px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
 .patches td.ralo { height: 36px; vertical-align: middle; }
-.patches td.with-ralo { background: #FBE6CF; }
-.patches td.pending { background: #F2F1EC; border-left: 2px solid #fff; border-right: 2px solid #fff; }
+.patches td.with-ralo { background: #E4E4E4; }
+.patches td.pending { background: #F7F7F7; border-left: 2px solid #fff; border-right: 2px solid #fff; }
 .patches .none { color: var(--muted); }
 
 .lead { margin-top: 24px; font-weight: 600; }
