@@ -40,23 +40,27 @@
         </p>
         <p>Another plant, <strong>ralocrop</strong> (shown as <RaloIcon />), can also grow in these patches.</p>
         <PatchCard v-if="showsPatches" :info="condition.info" />
-        <button @click="save({})">Continue</button>
+        <!-- Comprehension check: the participant can only continue after the correct answer. -->
+        <div class="question-box">
+          <p class="q"><span class="q-mark">Q:</span> Which plant does the colony depend on for its survival?</p>
+          <MultipleChoiceInput :options="comprehensionOrder" @update:response="answerComprehension" />
+          <p v-if="comprehension && comprehension !== COMPREHENSION_ANSWER" class="retry">
+            That is not correct. Please read the story again and choose another answer.</p>
+        </div>
+        <button v-if="comprehension === COMPREHENSION_ANSWER"
+                @click="save({ comprehension_first: comprehensionFirst, comprehension_errors: comprehensionErrors,
+                               comprehension_order: comprehensionOrder.join('|') })">Continue</button>
         <Record :data="trialInfo('cover')" />
       </Screen>
 
-      <!-- Screen 3. The evidence, the attention check and the intervention prediction (main measure) -->
+      <!-- Screen 3. The evidence and the intervention prediction (main measure) -->
       <Screen>
         <Slide>
           <PatchCard v-if="showsPatches" :info="condition.info" caption />
           <Evidence :condition="condition" :patches="harvestOrder" :shown="shown" />
           <button v-if="!allGathered" @click="gather">Gather the next patch</button>
           <template v-else>
-            <!-- Attention check before the critical question; recorded without feedback. -->
             <div class="question-box">
-              <p class="q"><span class="q-mark">Q:</span> Which plant does the colony depend on for its survival?</p>
-              <MultipleChoiceInput :options="attentionOrder" @update:response="attention = $event" />
-            </div>
-            <div v-if="attention" class="question-box">
               <p class="context">
                 Here are 100 other patches. Last season, all of them gave a <strong>low</strong> xeliherb yield,
                 and none of them had ralocrop.
@@ -66,9 +70,8 @@
               <Rating v-model="prediction" question="How many of them will give a high xeliherb yield this season?"
                       left="0" right="100" />
             </div>
-            <button v-if="attention && prediction !== null"
-                    @click="save({ prediction, attention, attention_correct: attention === ATTENTION_ANSWER,
-                                   attention_order: attentionOrder.join('|'), patch_order: patchOrderText,
+            <button v-if="prediction !== null"
+                    @click="save({ prediction, patch_order: patchOrderText,
                                    reveal_ms: revealMs.join('|') || null, gather_ms: gatherMs })">Continue</button>
           </template>
           <Record :data="trialInfo('critical')" />
@@ -138,9 +141,9 @@ import XeliIcon from './components/XeliIcon.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v5'; // 2 x 3 design (information type x vehicle); change whenever the materials change
-const ATTENTION_ANSWER = 'Xeliherb';
-const ATTENTION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
+const DESIGN_VERSION = 'v6'; // 2 x 3 design (information type x vehicle), blocking comprehension check; change whenever the materials change
+const COMPREHENSION_ANSWER = 'Xeliherb';
+const COMPREHENSION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
 const POLICY_OPTIONS = ['Both xeliherb and ralocrop', 'Only xeliherb'];
 
 export default {
@@ -150,10 +153,12 @@ export default {
     return {
       condition: conditions.find((c) => c.condition === requested) || null,
       harvestOrder: _.shuffle(patches), // the order of the patch table, gathered or reported
-      ATTENTION_ANSWER,
-      attentionOrder: _.shuffle(ATTENTION_OPTIONS),
+      COMPREHENSION_ANSWER,
+      comprehensionOrder: _.shuffle(COMPREHENSION_OPTIONS),
+      comprehension: null,
+      comprehensionFirst: null,
+      comprehensionErrors: 0,
       policyOrder: _.shuffle(POLICY_OPTIONS),
-      attention: null,
       prediction: null,
       shown: 0,
       revealMs: [],
@@ -175,6 +180,11 @@ export default {
     }
   },
   methods: {
+    answerComprehension(answer) {
+      if (this.comprehensionFirst === null) this.comprehensionFirst = answer;
+      if (answer !== COMPREHENSION_ANSWER) this.comprehensionErrors += 1;
+      this.comprehension = answer;
+    },
     gather() {
       this.revealMs.push(Date.now() - this.screenStart);
       this.shown += 1;

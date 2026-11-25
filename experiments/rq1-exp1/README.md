@@ -7,7 +7,8 @@ A 2 x 3 between-participants design: information type (observational: wild patch
 in which the colonists plant ralocrop) crossed with the vehicle (own observation: participants gather the ten patches;
 data reported: a colonist sends the patch table and summary; verbal report: a colonist sends one sentence).
 The verbal-report groups see no kind of patch; their sentence is "associated with" (observational) or "causes"
-(interventional). Participants answer an attention check, then predict how many of 100 low-yield patches without
+(interventional). After the cover story, participants answer a comprehension question and can only continue once
+they answer it correctly. They then see the evidence and predict how many of 100 low-yield patches without
 ralocrop will give a high yield once ralocrop is planted, and finally choose a cultivation policy.
 
 ## Conditions and Prolific
@@ -46,8 +47,8 @@ and open http://localhost:8096/?condition=fields. In debug mode the data appear 
 ## Data
 
 One row per screen (`screen` = welcome, cover, critical, policy), each with `condition`, `info`, `vehicle`,
-`batch`, `design_version` (v5 for the 2 x 3 design) and magpie's `responseTime` (the time spent on the screen).
-Critical: `prediction` (0-100), `attention` (the answer), `attention_correct`, `attention_order` (display order),
-`patch_order` (patch numbers in `trials/patches.csv`, in the order of the patch table; not in the verbal-report
+`batch`, `design_version` (v6: the 2 x 3 design with the blocking comprehension check; v5 had an attention check on the critical screen) and magpie's `responseTime` (the time spent on the screen).
+Cover: `comprehension_first` (the first answer), `comprehension_errors` (wrong answers before the correct one) and
+`comprehension_order` (display order). Critical: `prediction` (0-100), `patch_order` (patch numbers in `trials/patches.csv`, in the order of the patch table; not in the verbal-report
 groups), and in the own-observation groups `reveal_ms` (time of each click since the screen opened) and `gather_ms`
 (time from the first to the last click). Policy: `policy` and `policy_order`.
