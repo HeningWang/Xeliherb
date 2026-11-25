@@ -141,7 +141,7 @@ import XeliIcon from './components/XeliIcon.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v7'; // 2 x 3 design (information type x vehicle), blocking comprehension check, grey palette; change whenever the materials change
+const DESIGN_VERSION = 'v7'; // 2 x 3 design (information type x vehicle), blocking comprehension check, grey wild-patch box; change whenever the materials change
 const COMPREHENSION_ANSWER = 'Xeliherb';
 const COMPREHENSION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
 const POLICY_OPTIONS = ['Both xeliherb and ralocrop', 'Only xeliherb'];
@@ -242,7 +242,7 @@ html, body { background: #fff; color: var(--ink); } /* a light page whatever the
 .patches .bar-wrap { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
 .patches .bar { width: 26px; background: #4F7A4A; border-radius: 2px 2px 0 0; }
 .patches td.ralo { height: 36px; vertical-align: middle; }
-.patches td.with-ralo { background: #E4E4E4; }
+.patches td.with-ralo { background: #FBE6CF; }
 .patches td.pending { background: #F7F7F7; border-left: 2px solid #fff; border-right: 2px solid #fff; }
 .patches .none { color: var(--muted); }
 

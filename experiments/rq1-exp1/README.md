@@ -47,7 +47,7 @@ and open http://localhost:8096/?condition=fields. In debug mode the data appear 
 ## Data
 
 One row per screen (`screen` = welcome, cover, critical, policy), each with `condition`, `info`, `vehicle`,
-`batch`, `design_version` (v7: the 2 x 3 design with the blocking comprehension check and the grey palette; v6 had the same materials in warm colours; v5 had an attention check on the critical screen) and magpie's `responseTime` (the time spent on the screen).
+`batch`, `design_version` (v7: the 2 x 3 design with the blocking comprehension check and a grey wild-patch box; v6 had the same materials with a cream wild-patch box; v5 had an attention check on the critical screen) and magpie's `responseTime` (the time spent on the screen).
 Cover: `comprehension_first` (the first answer), `comprehension_errors` (wrong answers before the correct one) and
 `comprehension_order` (display order). Critical: `prediction` (0-100), `patch_order` (patch numbers in `trials/patches.csv`, in the order of the patch table; not in the verbal-report
 groups), and in the own-observation groups `reveal_ms` (time of each click since the screen opened) and `gather_ms`
