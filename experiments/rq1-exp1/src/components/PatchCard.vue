@@ -3,7 +3,12 @@
        or identical beds in a fenced test field (interventional). Ralocrop grows in five patches and four patches
        give a high yield; in the picture the two are unrelated (two high-yield patches with ralocrop, two without),
        so it shows what the patches look like without giving evidence about ralocrop. -->
-  <div class="patch-card" :class="info">
+  <!-- On the critical screen (caption), the card is a verbal reminder without the picture, so that the picture
+       cannot mix with the evidence below it. -->
+  <div v-if="caption" class="patch-card reminder" :class="info">
+    <p v-html="reminder" />
+  </div>
+  <div v-else class="patch-card" :class="info">
     <p class="way">{{ info === 'obs' ? 'Wild patches' : 'Test field' }}</p>
     <div v-html="picture" />
     <p class="icon-legend" v-html="legend" />
@@ -28,9 +33,9 @@ const COVER_TEXT = {
   obs: 'Xeliherb grows wild on the plains. The colonists mark these patches on a map, together with any wild ralocrop.',
   int: 'To learn how xeliherb grows best, the colonists grow it in a test field, and in some patches they also plant ralocrop.'
 };
-const CAPTION = {
-  obs: 'Ten patches on the plains. Ralocrop grows wild in some of them.',
-  int: 'Ten patches in the test field. The colonists plant ralocrop in five of them.'
+const REMINDER = {
+  obs: 'Remember: these are <strong>wild patches</strong>. Nobody planted the ralocrop; it grew there by itself.',
+  int: 'Remember: this is the <strong>test field</strong>. The colonists chose five of the ten patches and planted ralocrop in them.'
 };
 
 function picture(info) {
@@ -51,11 +56,12 @@ export default {
   name: 'PatchCard',
   props: {
     info: { type: String, required: true }, // 'obs' or 'int'
-    caption: { type: Boolean, default: false } // the critical screen repeats the card with a short caption
+    caption: { type: Boolean, default: false } // the critical screen shows a verbal reminder instead of the card
   },
   computed: {
     picture() { return picture(this.info); },
-    text() { return this.caption ? CAPTION[this.info] : COVER_TEXT[this.info]; },
+    reminder() { return REMINDER[this.info]; },
+    text() { return COVER_TEXT[this.info]; },
     legend() {
       return `${icon(xeliYield(9, 19, true), 18)} high yield of xeliherb ` +
         `<span>${icon(xeliYield(7, 18, false), 14)} low yield of xeliherb</span> ` +
