@@ -58,7 +58,7 @@
         <Slide>
           <PatchCard v-if="showsPatches" :info="condition.info" caption />
           <Evidence :condition="condition" :patches="harvestOrder" :shown="shown" />
-          <button v-if="!allGathered" @click="gather">Gather the next patch</button>
+          <button v-if="!allGathered" :disabled="gathering" @click="gather">Gather the next patch</button>
           <template v-else>
             <div class="question-box">
               <p class="context">
@@ -141,9 +141,10 @@ import XeliIcon from './components/XeliIcon.vue';
 const params = new URL(window.location).searchParams;
 const requested = params.get('condition');
 const BATCH = params.get('batch');
-const DESIGN_VERSION = 'v8'; // 2 x 3 design (information type x vehicle), blocking comprehension check, grey wild-patch box, verbal reminder on the critical screen; change whenever the materials change
+const DESIGN_VERSION = 'v9'; // 2 x 3 design (information type x vehicle), blocking comprehension check, grey wild-patch box, verbal reminder on the critical screen, 500 ms pause between gathering clicks; change whenever the materials change
 const COMPREHENSION_ANSWER = 'Xeliherb';
 const COMPREHENSION_OPTIONS = ['Xeliherb', 'Ralocrop', 'Neither of them'];
+const GATHER_PAUSE_MS = 500; // the gathering button stays inactive this long after each click
 const POLICY_OPTIONS = ['Both xeliherb and ralocrop', 'Only xeliherb'];
 
 export default {
@@ -162,6 +163,7 @@ export default {
       prediction: null,
       shown: 0,
       revealMs: [],
+      gathering: false,
       screenStart: Date.now()
     };
   },
@@ -186,8 +188,11 @@ export default {
       this.comprehension = answer;
     },
     gather() {
+      if (this.gathering) return;
       this.revealMs.push(Date.now() - this.screenStart);
       this.shown += 1;
+      this.gathering = true;
+      setTimeout(() => { this.gathering = false; }, GATHER_PAUSE_MS);
     },
     trialInfo(screen) {
       const { condition, info, vehicle } = this.condition;
